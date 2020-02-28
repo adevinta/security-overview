@@ -103,6 +103,9 @@ func GenerateFullReport(conf config.Config, awsConfig *aws.Config, resourcesPath
 		Groups:                  generateGroups(reportData),
 		DocumentationLink:       conf.General.DocumentationLink,
 		RoadmapLink:             conf.General.RoadmapLink,
+		Jira:                    conf.General.Jira,
+		ContactEmail:            conf.General.ContactEmail,
+		ContactChannel:          conf.General.ContactChannel,
 
 		GAID: conf.Analytics.GAID,
 	}

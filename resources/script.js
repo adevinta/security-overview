@@ -245,3 +245,25 @@ function closeAllModals() {
     modal.removeClass("is-active");
   });
 }
+function showReportProblem(issue, asset){
+  var modal = $("#report-problem");
+  $("#report-problem-issue").text(issue);
+  $("#report-problem-asset").text(asset);
+  $("#report-problem-reason").val("False Positive");
+  $("#report-problem-comments").val("");
+  modal.addClass("is-active");
+}
+
+function reportProblem(){
+  var team = $("#report-problem-team").text();
+  var scan = $("#report-problem-scan").text();
+  var issue = $("#report-problem-issue").text();
+  var asset = $("#report-problem-asset").text();
+  var reason = $("#report-problem-reason").val();
+  var comments = $("#report-problem-comments").val();
+  if (reason == "Other") reason = "Problem";
+
+  var url = "https://jira.mpi-internal.com/secure/CreateIssueDetails!init.jspa?pid=13680&issuetype=11711&priority=4&labels=Security&summary="+reason+"+in+"+team+"%27s+Report&description=I+would+like+to+report+a+problem+with+a+finding+in+our+Vulcan+report.%0a%0aReason:+"+reason+"%0aTeam:+"+team+"%0aScan:+"+scan+"%0aIssue:+"+issue+"%0aAsset:+"+asset+"%0aAdditional+comments:%0a"+encodeURI(comments);
+  var w = window.open(url, "_blank");
+  w.opener = null; // Prevent opener hijacking.
+}

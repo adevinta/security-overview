@@ -19,6 +19,7 @@ import (
 
 	"github.com/adevinta/security-overview/config"
 	"github.com/adevinta/security-overview/report"
+	"github.com/adevinta/security-overview/resources"
 	"github.com/adevinta/security-overview/vulcan"
 )
 
@@ -38,6 +39,8 @@ type DetailedReport struct {
 
 // NewDetailedReport  initializes and returns a new DetailedReport
 func NewDetailedReport(configFile, teamName, scanID, teamID string) (*DetailedReport, error) {
+	resources.Include()
+
 	conf, err := config.ReadConfig(configFile)
 	if err != nil {
 		return nil, err
