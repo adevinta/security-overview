@@ -29,6 +29,8 @@ type Overview struct {
 	LinkFullReport string
 	CompanyName    string
 	SupportEmail   string
+	ContactEmail   string
+	ContactChannel string
 	Proxy          string
 	UploadToS3     bool
 	AWSConfig      *aws.Config

@@ -47,6 +47,9 @@ type Group struct {
 }
 
 type FullReport struct {
+	Jira                string      `json:"-" xml:"-"`
+	ContactChannel      string      `json:"-" xml:"-"`
+	ContactEmail        string      `json:"-" xml:"-"`
 	ResourcesPath       string      `json:"-" xml:"-"`
 	LocalTempDir        string      `json:"-" xml:"-"`
 	PublicResourcesPath string      `json:"-" xml:"-"`

@@ -43,8 +43,11 @@ type generalConfig struct {
 	LocalTempDir      string `toml:"local_temp_dir"`
 	CompanyName       string `toml:"company_name"`
 	SupportEmail      string `toml:"support_email"`
+	ContactEmail      string `toml:"contact_email"`
+	ContactChannel    string `toml:"contact_channel"`
 	DocumentationLink string `toml:"documentation_link"`
 	RoadmapLink       string `toml:"roadmap_link"`
+	Jira              string `toml:"jira"`
 }
 
 type endpointsConfig struct {
