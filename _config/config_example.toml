@@ -1,0 +1,29 @@
+[analytics]
+ga_id = "id"
+
+[s3]
+upload = true
+private_bucket = "vulcan-insights-dev"
+public_bucket = "public-vulcan-insights-dev"
+
+[persistence]
+endpoint = "https://vulcan-persistence-dev.example.com"
+
+[results]
+endpoint = "https://vulcan-results-dev.example.com"
+
+[proxy]
+endpoint = "https://insights-dev.vulcan.example.com"
+
+[general]
+resources_path = "_resources"
+local_temp_dir = "output"
+company_name = "acme"
+support_email = "support@example.com"
+documentation_link = "https://docs.example.com/vulcan-api/examples/#how-do-i-list-the-members-of-a-team"
+roadmap_link = "https://roadmap.example.com/roadmap.html"
+
+[endpoints]
+vulcan_ui   = "https://vulcan.example.com/"
+view_report     = "vulcan-dev.example.com/api/v1/report?team_id=%s&scan_id=%s"
+redirect_url = "https://vulcan-insights.example.com/index.html?reportUrl="

@@ -1,0 +1,15 @@
+*.swp
+*.swo
+_tmp/*.png
+_tmp/*.html
+_tmp/*.css
+_tmp/*.js
+_tmp/*.json
+security-overview.git
+persistence/cli/cli
+cmd/v2/output
+cmd/vulcan-security-overview/output
+cmd/vulcan-security-overview/*.json
+vendor/
+.DS_Store
+/output/

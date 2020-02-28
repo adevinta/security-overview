@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Vulcan Report - {{.TeamName}}</title>
+    <link rel="stylesheet" href="{{ upload "style.css" }}">
+    <link rel="stylesheet" href="{{ .Proxy }}/public/font-awesome.min.css">
+    <link rel="stylesheet" href="{{ .Proxy }}/public/bulma.min.css">
+    <link rel="icon" type="image/png" href="{{ .Proxy }}/public/favicon.png">
+    <script src="{{ .Proxy }}/public/jquery.min.js"></script>
+    <script src="{{ .Proxy }}/public/Chart.bundle.min.js"></script>
+    <script async src="{{ .Proxy }}/public/analytics.js"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', '{{ .GAID }}');
+gtag('set', 'anonymizeIp', true);
+    </script>
+    <script>
+      function randomScalingFactor() {
+        return Math.floor(Math.random() * 100);
+      }
+$(document).ready(function() {
+  var ctx = document.getElementById("chart-assets").getContext('2d');
+  var barChartData = {
+    labels: [
+      {{- range $i, $asset := .VulnerabilitiesPerAsset -}}
+      {{- if gt $asset.Count.Issues 0 -}}
+      {{if $i}}, {{end}}"{{$asset.Asset}}"
+      {{- end -}}
+      {{- end -}}
+    ],
+    datasets: [{
+      label: 'Low',
+      backgroundColor: "#F1C40F",
+      data: [
+        {{- range $i, $asset := .VulnerabilitiesPerAsset -}}
+        {{- if gt $asset.Count.Issues 0 -}}
+        {{if $i}}, {{end}}{{$asset.Count.Low}}
+        {{- end -}}
+        {{- end -}}
+      ]
+    }, {
+      label: 'Medium',
+      backgroundColor: "#F39C12",
+      data: [
+        {{- range $i, $asset := .VulnerabilitiesPerAsset -}}
+        {{- if gt $asset.Count.Issues 0 -}}
+        {{if $i}}, {{end}}{{$asset.Count.Medium}}
+        {{- end -}}
+        {{- end -}}
+      ]
+    }, {
+      label: 'High',
+      backgroundColor: "#E74C3C",
+      data: [
+        {{- range $i, $asset := .VulnerabilitiesPerAsset -}}
+        {{- if gt $asset.Count.Issues 0 -}}
+        {{if $i}}, {{end}}{{$asset.Count.High}}
+        {{- end -}}
+        {{- end -}}
+      ]
+    }, {
+      label: 'Critical',
+      backgroundColor: "#8E44AD",
+      data: [
+        {{- range $i, $asset := .VulnerabilitiesPerAsset -}}
+        {{- if gt $asset.Count.Issues 0 -}}
+        {{if $i}}, {{end}}{{$asset.Count.Critical}}
+        {{- end -}}
+        {{- end -}}
+      ]
+    }]
+  };
+  var chartAssets = new Chart(ctx, {
+    type: 'bar',
+    data: barChartData,
+    options: {
+      title:{
+        display: true,
+        text: "Vulnerable Assets",
+      },
+      tooltips: {
+        mode: 'index',
+        intersect: false
+      },
+      responsive: true,
+      scales: {
+        xAxes: [{
+          display: false,
+          stacked: true,
+        }],
+        yAxes: [{
+          stacked: true,
+          ticks: {
+            stepSize: 1
+          },
+          scaleLabel: {
+            display: true,
+            labelString: 'Vulnerabilities',
+          }
+        }]
+      }
+    }
+  });
+});
+    </script>
+  </head>
+  <body>
+    <nav class="nav has-shadow" id="top">
+      <div class="container">
+        <div class="nav-left">
+          <span class="nav-item">
+            <strong>Vulcan Report</strong>
+          </span>
+          <span class="nav-item">
+            {{.TeamName}}
+          </span>
+        </div>
+      </div>
+    </nav>
+    <section class="section">
+      <div class="container">
+        <div class="tabs is-centered is-medium is-boxed">
+          <ul>
+            <li id="tab-issues" class="is-active">
+              <a>
+                <span class="icon is-small"><i class="fa fa-bug"></i></span>
+                <span>Issues</span>
+              </a>
+            </li>
+            <li id="tab-assets">
+              <a>
+                <span class="icon is-small"><i class="fa fa-server"></i></span>
+                <span>Assets</span>
+              </a>
+            </li>
+            <li id="tab-manage-assets" class="external-link-tab" data-url="{{.ManageAssetsURL}}">
+              <a>
+                <span class="icon is-small"><i class="fa fa-edit"></i></span>
+                <span>Manage Assets</span>
+              </a>
+            </li>
+            <li id="tab-dashboard">
+              <a>
+                <span class="icon is-small"><i class="fa fa-pie-chart"></i></span>
+                <span>Dashboard</span>
+              </a>
+            </li>
+            <li id="tab-details" class="external-link-tab" data-url="{{.DetailsURL}}">
+              <a>
+                <span class="icon is-small"><i class="fa fa-info-circle"></i></span>
+                <span>Details</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+        <div class="columns">
+          <div id="info" class="column is-one-quarter">
+            <div id="filter-parents" class="field is-grouped is-grouped-right">
+              <div class="field has-addons">
+                <div class="control has-icons-left">
+                  <input id="filter-parents-query" class="input" type="text" placeholder="Find an issue">
+                  <span class="icon is-small is-left">
+                    <i class="fa fa-filter"></i>
+                  </span>
+                </div>
+                <div class="control">
+                  <a class="button is-primary clear-filter">
+                    <span class="icon">
+                      <i class="fa fa-times"></i>
+                    </span>
+                  </a>
+                </div>
+              </div>
+              <div class="dropdown" style="margin-left:.5em">
+                <div class="dropdown-trigger">
+                  <button class="button" aria-haspopup="true" aria-controls="dropdown-menu-assets" disabled>
+                    <span>Sort by</span>
+                    <span class="icon is-small">
+                      <i class="fa fa-angle-down" aria-hidden="true"></i>
+                    </span>
+                  </button>
+                </div>
+                <div class="dropdown-menu" id="dropdown-menu-assets" role="menu">
+                  <div class="dropdown-content">
+                    <a class="dropdown-item">
+                      Impact
+                    </a>
+                    <a class="dropdown-item">
+                      Check
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div style="margin-bottom:1em">
+              <div class="card">
+                <header class="card-header">
+                  <p class="card-header-title">
+                  <span class="icon is-small" style="margin-right:.5em"><i class="fa fa-users"></i></span>
+                  <span>Team Name</span>
+                  </p>
+                </header>
+                <div class="card-content" style="padding:15px">
+                  {{.TeamName}}
+                </div>
+              </div>
+              <div class="card">
+                <header class="card-header">
+                  <p class="card-header-title">
+                  <span class="icon is-small" style="margin-right:.5em"><i class="fa fa-crosshairs"></i></span>
+                  <span>Scan ID</span>
+                  </p>
+                </header>
+                <div class="card-content" style="padding:15px;font-size:.9em">
+                  {{ .ScanID }}
+                </div>
+              </div>
+              <div class="card">
+                <header class="card-header">
+                  <p class="card-header-title">
+                  <span class="icon is-small" style="margin-right:.5em"><i class="fa fa-clock-o"></i></span>
+                  <span>Scan Time</span>
+                  </p>
+                </header>
+                <div class="card-content" style="padding:15px">
+                  {{ .ScanTime }}
+                </div>
+              </div>
+              <div class="card">
+                <header class="card-header">
+                  <p class="card-header-title">
+                  <span class="icon is-small" style="margin-right:.5em"><i class="fa fa-server"></i></span>
+                  <span>Assets</span>
+                  </p>
+                  <p class="card-header-icon" style="cursor:auto">
+                  {{ len .VulnerabilitiesPerAsset }}
+                  </p>
+                </header>
+              </div>
+              <div class="card">
+                <header class="card-header">
+                  <p class="card-header-title">
+                  <span class="icon is-small" style="margin-right:.5em"><i class="fa fa-bug"></i></span>
+                  <span>Vulnerabilities</span>
+                  </p>
+                  <p class="card-header-icon" style="cursor:auto">
+                  {{ .Vulnerabilities }}
+                  </p>
+                </header>
+              </div>
+              <div class="card">
+                <header class="card-header">
+                  <p class="card-header-title">
+                  <span class="icon is-small" style="margin-right:.5em"><i class="fa fa-shield"></i></span>
+                  <span>Risk</span>
+                  </p>
+                  <p class="card-header-icon" style="cursor:auto">
+                  <span class="tag is-{{ severityToClass .Risk}}-severity">{{severityToStr .Risk}}</span>
+                  </p>
+                </header>
+              </div>
+            </div>
+            <div class="field">
+              <a href="{{ .JSONExportURL }}" class="button is-fullwidth" download>
+                <span class="icon">
+                  <i class="fa fa-download"></i>
+                </span>
+                <span>Export JSON</span>
+              </a>
+            </div>
+            <div class="field">
+              <a class="button is-fullwidth" onclick="window.print()">
+                <span class="icon">
+                  <i class="fa fa-file-pdf-o"></i>
+                </span>
+                <span>Export PDF</span>
+              </a>
+            </div>
+            <div class="field">
+              <a class="button is-fullwidth" id="filter-info">
+                <label class="checkbox"><input type="checkbox" style="margin-right:5px" checked disabled> Hide informational findings</label>
+              </a>
+            </div>
+            <div class="notification is-warning">
+              <button class="delete"></button>
+              <b>New Features</b>
+              <ul style="list-style-type:square;margin:5px 0 5px 20px">
+                <li>You can now manage the assets for your team through this page by clicking on the "Manage Assets" tab. This requires you to be an owner of your team.</li>
+                <li>You can now manage which users can access this report or are allowed to manage assets through the <a href="{{ .DocumentationLink }}">Vulcan API</a>.</li>
+                <li>Check the details of how are you being scanned by clicking on the "Details" tab.</li>
+              </ul>
+              <p>Feel free to check our <a href="{{ .RoadmapLink }}">roadmap</a>!</p>
+            </div>
+            <div class="notification">
+              <button class="delete"></button>
+              <p><strong>Note:</strong> This report is still a work in progress and not all UI elements are fully functional. Please, bear with us as we improve it and feel free to <a href="https://goo.gl/forms/EZZMER8xL5uGdj6l1">give us your feedback</a>!</p>
+            </div>
+          </div>
+          <div id="issues" class="column is-three-quarters">
+            {{- range $asset, $group := .Groups}}
+            <div class="card group impact-{{ (index $group.Vulns 0).Vulnerability.Severity }}" style="display:{{- if eq (index $group.Vulns 0).Vulnerability.Severity 0 -}} none {{- else -}} inherit {{- end }}">
+              <header class="card-header parent-asset" style="cursor:pointer">
+                <p class="card-header-title">
+                <span class="icon is-small" style="margin-right:.5em"><i class="fa fa-bug has-text-{{ severityToClass (index $group.Vulns 0).Vulnerability.Severity }}-severity"></i></span>
+                <span>{{$group.Summary}}</span>
+                </p>
+                <span class="card-header-icon" aria-label="collapse">
+                  <div class="tags has-addons" style="display:{{- if eq (index $group.Vulns 0).Vulnerability.Severity 0 -}} none {{- else -}} inherit {{- end }};margin:0">
+                    <span class="tag is-white" style="margin:0"><span class="icon"><i class="fa fa-bug"></i></span></span>
+                    <span class="tag is-light" style="width:30px;margin:0">{{ countGroupVulnerabilities $group }}</span>
+                  </div>
+                  <span class="icon" style="margin-left:1em">
+                    <i class="fa fa-angle-down" aria-hidden="true"></i>
+                  </span>
+                </span>
+              </header>
+              <div class="card-content" style="display:none">
+                <div class="field is-grouped is-grouped-right">
+                  <div class="field has-addons" style="margin-bottom:0">
+                    <div class="control has-icons-left">
+                      <input class="input filter-vulnerabilities" type="text" placeholder="Find an issue">
+                      <span class="icon is-small is-left">
+                        <i class="fa fa-filter"></i>
+                      </span>
+                    </div>
+                    <div class="control">
+                      <a class="button is-primary clear-filter">
+                        <span class="icon">
+                          <i class="fa fa-times"></i>
+                        </span>
+                      </a>
+                    </div>
+                  </div>
+                  <div class="dropdown" style="margin-left:.5em">
+                    <div class="dropdown-trigger">
+                      <button class="button" aria-haspopup="true" aria-controls="dropdown-menu-vulnerabilities-1" disabled>
+                        <span>Sort by</span>
+                        <span class="icon is-small">
+                          <i class="fa fa-angle-down" aria-hidden="true"></i>
+                        </span>
+                      </button>
+                    </div>
+                    <div class="dropdown-menu" id="dropdown-menu-vulnerabilities-1" role="menu">
+                      <div class="dropdown-content">
+                        <a class="dropdown-item">
+                          Impact
+                        </a>
+                        <a class="dropdown-item">
+                          Check
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="card-content">
+                  <div class="content">
+                    <table class="table">
+                      <tr><td><strong>Severity Score</strong></td><td>
+                          <div class="tags has-addons">
+                            <span class="tag">{{ roundScore (index $group.Vulns 0).Vulnerability.Score }}</span>
+                            <span class="tag is-{{ severityToClass (index $group.Vulns 0).Vulnerability.Severity }}-severity">{{ severityToStr (index $group.Vulns 0).Vulnerability.Severity }}</span></td></tr>
+                          </div>
+                          {{- if printRecommendations $group.Recommendations }}
+                          <tr>
+                            <td><strong>Recommendations</strong></td>
+                            <td>
+                              {{- range $j, $recommendation := $group.Recommendations }}
+                              {{- if ne $recommendation `n/a`}}
+                              <p>{{ formatHTML $recommendation }}</p>
+                              {{- end}}
+                              {{- end}}
+                            </td>
+                          </tr>
+                          {{- end}}
+                    </table>
+                  </div>
+                </div>
+                {{- range $i, $vuln := $group.Vulns}}
+                <div class="card vulnerability impact-{{ .Vulnerability.Severity }}" style="display:
+                {{- if eq .Vulnerability.Severity 0 -}} none {{- else -}} inherit {{- end }}">
+                  <header class="card-header parent-vulnerability" style="cursor:pointer">
+                    <p class="card-header-title">
+                    <span class="icon is-small" style="margin-right:.5em"><i class="fa fa-bug has-text-{{ severityToClass .Vulnerability.Severity }}-severity"></i></span>
+                    <span>{{.Vulnerability.Summary}}</span>
+                    </p>
+                    <div class="tags has-addons" style="margin:0">
+                      <span class="tag is-white" style="margin:0"><span class="icon"><i class="fa fa-server"></i></span></span>
+                      <span class="tag is-light" style="width:30px;margin:0">{{ len .AffectedTargets }}</span>
+                    </div>
+                    <span class="card-header-icon" aria-label="collapse">
+                      <span class="icon">
+                        <i class="fa fa-angle-down" aria-hidden="true"></i>
+                      </span>
+                    </span>
+                  </header>
+                  <div class="card-content" style="display:none">
+                    <div class="content">
+                      <p>{{ formatHTML .Vulnerability.Description }}</p>
+                      <table class="table">
+                        <tr><td><strong>Severity Score</strong></td><td>
+                            <div class="tags has-addons">
+                              <span class="tag">{{ roundScore .Vulnerability.Score }}</span>
+                              <span class="tag is-{{ severityToClass .Vulnerability.Severity }}-severity">{{ severityToStr .Vulnerability.Severity }}</span></td></tr>
+                            </div>
+
+                            {{- if .Vulnerability.ImpactDetails }}
+                            <tr><td><strong>Impact</strong></td><td>{{ .Vulnerability.ImpactDetails }}</td></tr>
+                            {{- end}}
+
+                            {{- if printRecommendations .Vulnerability.Recommendations }}
+                              <tr>
+                                <td><strong>Recommendations</strong></td>
+                                <td>
+                                  {{- range $j, $recommendation := .Vulnerability.Recommendations }}
+                                  {{- if ne $recommendation `n/a`}}
+                                  <p>{{ formatHTML $recommendation }}</p>
+                                  {{- end}}
+                                  {{- end}}
+                                </td>
+                              </tr>
+                            {{- end}}
+
+                            {{- if .Vulnerability.References }}
+                            <tr class="vulnerability-references"><td><strong>References</strong></td><td>
+                                <p>
+                                {{- range $j, $reference := .Vulnerability.References }}
+                                <a target="_blank" href="{{ $reference }}" class="button reference">
+                                  <span>{{ urlDomain $reference }}</span>
+                                  <span class="icon is-small">
+                                    <i class="fa fa-external-link"></i>
+                                  </span>
+                                </a>
+                                {{- end}}
+                                </p>
+                              </td></tr>
+                              {{- end}}
+                              <tr><td><strong>Check</strong></td><td>{{.CheckType}}</td></tr>
+                                    <tr><td><strong>Affected Assets</strong></td><td>
+                                <p>
+                                        {{- range $j, $target := .AffectedTargets }}
+                                <a target="_blank" onclick="viewAssetVulnerability('{{ $target }}', '{{ $vuln.Vulnerability.Summary }}')" class="button reference">
+                                  <span class="icon is-small">
+                                    <i class="fa fa-server"></i>
+                                  </span>
+                                  <span>{{ $target }}</span>
+                                </a>
+                                {{- end}}
+                                </p>
+                                      </td></tr>
+                      </table>
+                    </div>
+                    {{- range $j, $vulnerability := .Vulnerability.Vulnerabilities }}
+                    <div class="card vulnerability impact-{{ $vulnerability.Severity }}" style="display:
+                    {{- if eq $vulnerability.Severity 0 -}} none {{- else -}} inherit {{- end }}">
+                      <header class="card-header child-vulnerability" style="cursor:pointer">
+                        <p class="card-header-title">
+                        <span class="icon is-small" style="margin-right:.5em"><i class="fa fa-bug has-text-{{ severityToClass $vulnerability.Severity }}-severity"></i></span>
+                        <span>{{$vulnerability.Summary}}</span>
+                        </p>
+                        <span class="card-header-icon">
+                          <span class="icon">
+                            <i class="fa fa-external-link"></i>
+                          </span>
+                          </a>
+                      </header>
+                      <div class="modal">
+                        <div class="modal-background"></div>
+                        <div class="modal-card" style="min-width:700px;width:80%">
+                          <header class="modal-card-head">
+                            <p class="modal-card-title">
+                            <span class="icon is-small" style="margin-right:.5em"><i class="fa fa-bug has-text-{{ severityToClass $vulnerability.Severity }}-severity"></i></span>
+                            <span>{{$vulnerability.Summary}}</span>
+                            </p>
+                            <button class="delete modal-delete" aria-label="close"></button>
+                          </header>
+                          <section class="modal-card-body">
+                            <div class="content">
+                              <p>{{ formatHTML $vulnerability.Description }}</p>
+                              <table class="table">
+                                    <tr>
+                                    <td><strong>Severity Score</strong></td>
+                                    <td>
+                                    <div class="tags has-addons">
+                                      <span class="tag">{{ roundScore $vulnerability.Score }}</span>
+                                      <span class="tag is-{{ severityToClass $vulnerability.Severity }}-severity">{{ severityToStr $vulnerability.Severity }}</span></td></tr>
+                                    </div>
+                                    </td>
+                                    </tr>
+
+                                    {{- if $vulnerability.Details }}
+                                    <tr><td><strong>Details</strong></td><td><pre style="white-space:pre-wrap;">{{ $vulnerability.Details }}<pre></td></tr>
+                                    {{- end}}
+
+                                    {{- if $vulnerability.ImpactDetails }}
+                                    <tr><td><strong>Impact</strong></td><td>{{ $vulnerability.ImpactDetails }}</td></tr>
+                                    {{- end}}
+
+                                    {{- if $vulnerability.Recommendations }}
+                                    <tr><td><strong>Recommendations</strong></td><td>
+                                        {{- range $j, $recommendation := $vulnerability.Recommendations }}
+                                        <p>{{ formatHTML $recommendation }}</p>
+                                        {{- end}}
+                                      </td></tr>
+                                      {{- end}}
+                                      {{- if $vulnerability.References }}
+                                      <tr class="vulnerability-references"><td><strong>References</strong></td><td>
+                                          <p>
+                                          {{- range $k, $reference := $vulnerability.References }}
+                                          <a target="_blank" href="{{ $reference }}" class="button reference">
+                                            <span>{{ urlDomain $reference }}</span>
+                                            <span class="icon is-small">
+                                              <i class="fa fa-external-link"></i>
+                                            </span>
+                                          </a>
+                                          {{- end}}
+                                          </p>
+                                        </td></tr>
+                                        {{- end}}
+                              </table>
+                            </div>
+                          </section>
+                          <footer class="modal-card-foot">
+                            <button class="button modal-delete">Close</button>
+                          </footer>
+                        </div>
+                      </div>
+                    </div>
+                    {{- end}}
+                  </div>
+                </div>
+                {{- end}}
+              </div>
+            </div>
+            {{- end}}
+          </div>
+          <div id="assets" class="column is-three-quarters" style="display:none">
+            {{- range $asset, $item := .VulnerabilitiesPerAsset}}
+            <div id="{{$item.Asset}}" class="card asset impact-{{ (index $item.Vulns 0).Vulnerability.Severity }}" >
+              <header class="card-header parent-asset {{ if eq (index $item.Vulns 0).Vulnerability.Severity 0 -}} disabled {{- end }}" style="cursor:pointer">
+                <p class="card-header-title">
+                <span class="icon is-small" style="margin-right:.5em"><i class="fa fa-server"></i></span>
+                <span>{{$item.Asset}}</span>
+                </p>
+                <span class="card-header-icon" aria-label="collapse">
+                  <span class="tag is-{{ severityToClass (index $item.Vulns 0).Vulnerability.Severity }}-severity" style="display:{{- if eq (index $item.Vulns 0).Vulnerability.Severity 0 -}} none {{- else -}} inherit {{- end }}">{{ severityToStr (index $item.Vulns 0).Vulnerability.Severity }}</span>
+                  {{- if eq (index $item.Vulns 0).Vulnerability.Severity 0 -}}
+                  <span class="icon" style="color:#23d160;margin-left:1em">
+                    <i class="fa fa-check" aria-hidden="true"></i>
+                  </span>
+                  {{- end }}
+                  <span class="icon" style="margin-left:1em;display:{{- if eq (index $item.Vulns 0).Vulnerability.Severity 0 -}} none {{- else -}} inherit {{- end }}">
+                    <i class="fa fa-angle-down" aria-hidden="true"></i>
+                  </span>
+                </span>
+              </header>
+              <div class="card-content" style="display:none">
+                <div class="field is-grouped is-grouped-right">
+                  <div class="field has-addons" style="margin-bottom:0">
+                    <div class="control has-icons-left">
+                      <input class="input filter-vulnerabilities" type="text" placeholder="Find an issue">
+                      <span class="icon is-small is-left">
+                        <i class="fa fa-filter"></i>
+                      </span>
+                    </div>
+                    <div class="control">
+                      <a class="button is-primary clear-filter">
+                        <span class="icon">
+                          <i class="fa fa-times"></i>
+                        </span>
+                      </a>
+                    </div>
+                  </div>
+                  <div class="dropdown" style="margin-left:.5em">
+                    <div class="dropdown-trigger">
+                      <button class="button" aria-haspopup="true" aria-controls="dropdown-menu-vulnerabilities-1" disabled>
+                        <span>Sort by</span>
+                        <span class="icon is-small">
+                          <i class="fa fa-angle-down" aria-hidden="true"></i>
+                        </span>
+                      </button>
+                    </div>
+                    <div class="dropdown-menu" id="dropdown-menu-vulnerabilities-1" role="menu">
+                      <div class="dropdown-content">
+                        <a class="dropdown-item">
+                          Impact
+                        </a>
+                        <a class="dropdown-item">
+                          Check
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {{- range $i, $vuln := $item.Vulns}}
+                <div class="card vulnerability impact-{{ .Vulnerability.Severity }}" style="display:
+                {{- if eq .Vulnerability.Severity 0 -}} none {{- else -}} inherit {{- end }}">
+                  <header class="card-header parent-vulnerability" style="cursor:pointer">
+                    <p class="card-header-title">
+                    <span class="icon is-small" style="margin-right:.5em"><i class="fa fa-bug has-text-{{ severityToClass .Vulnerability.Severity }}-severity"></i></span>
+                    <span>{{.Vulnerability.Summary}}</span>
+                    </p>
+                    <span class="card-header-icon" aria-label="collapse">
+                      <span class="icon">
+                        <i class="fa fa-angle-down" aria-hidden="true"></i>
+                      </span>
+                    </span>
+                  </header>
+                  <div class="card-content" style="display:none">
+                    <div class="content">
+                      <p>{{ formatHTML .Vulnerability.Description }}</p>
+                      <table class="table">
+                        <tr><td><strong>Severity Score</strong></td><td>
+                            <div class="tags has-addons">
+                              <span class="tag">{{ roundScore .Vulnerability.Score }}</span>
+                              <span class="tag is-{{ severityToClass .Vulnerability.Severity }}-severity">{{ severityToStr .Vulnerability.Severity }}</span></td></tr>
+                            </div>
+
+                            {{- if not (isEmpty .Vulnerability.Details) }}
+                            <tr><td><strong>Details</strong></td><td><pre style="white-space:pre-wrap;">{{ .Vulnerability.Details }}<pre></td></tr>
+                            {{- end}}
+
+                            {{- if printRecommendations .Vulnerability.Recommendations }}
+                              <tr>
+                                <td><strong>Recommendations</strong></td>
+                                <td>
+                                  {{- range $j, $recommendation := .Vulnerability.Recommendations }}
+                                  {{- if ne $recommendation `n/a`}}
+                                  <p>{{ formatHTML $recommendation }}</p>
+                                  {{- end}}
+                                  {{- end}}
+                                </td>
+                              </tr>
+                            {{- end}}
+
+                            {{- if .Vulnerability.References }}
+                            <tr class="vulnerability-references"><td><strong>References</strong></td><td>
+                                <p>
+                                {{- range $j, $reference := .Vulnerability.References }}
+                                <a target="_blank" href="{{ $reference }}" class="button reference">
+                                  <span>{{ urlDomain $reference }}</span>
+                                  <span class="icon is-small">
+                                    <i class="fa fa-external-link"></i>
+                                  </span>
+                                </a>
+                                {{- end}}
+                                </p>
+                              </td></tr>
+                              {{- end}}
+
+                            {{- range $j, $resource := .Vulnerability.Resources }}
+                            <tr class="vulnerability-references"><td><strong>{{ $resource.Name }}</strong></td><td>
+                                <table class="table is-striped">
+                                  <thead>
+                                    {{- range $i, $header := $resource.Header }}
+                                    <th>{{ $header }}</th>
+                                    {{- end}}
+                                  </thead>
+                                  {{- range $j, $row := $resource.Rows }}
+                                    <tr>
+                                      {{- range $i, $header := $resource.Header }}
+                                        <td>{{ formatResources (index $row $header) }}</td>
+                                      {{- end}}
+                                    </tr>
+                                  {{- end}}
+                                </table>
+                              </td>
+                            </tr>
+                            {{- end}}
+
+                            {{- if .Vulnerability.ImpactDetails }}
+                            <tr><td><strong>Impact</strong></td><td>{{ .Vulnerability.ImpactDetails }}</td></tr>
+                            {{- end}}
+                      </table>
+                    </div>
+                    {{- range $j, $vulnerability := .Vulnerability.Vulnerabilities }}
+                    <div class="card vulnerability impact-{{ $vulnerability.Severity }}" style="display:
+                    {{- if eq $vulnerability.Severity 0 -}} none {{- else -}} inherit {{- end }}">
+                      <header class="card-header child-vulnerability" style="cursor:pointer">
+                        <p class="card-header-title">
+                        <span class="icon is-small" style="margin-right:.5em"><i class="fa fa-bug has-text-{{ severityToClass $vulnerability.Severity }}-severity"></i></span>
+                        <span>{{$vulnerability.Summary}}</span>
+                        </p>
+                        <span class="card-header-icon">
+                          <span class="icon">
+                            <i class="fa fa-external-link"></i>
+                          </span>
+                          </a>
+                      </header>
+                      <div class="modal">
+                        <div class="modal-background"></div>
+                        <div class="modal-card" style="min-width:700px;width:80%">
+                          <header class="modal-card-head">
+                            <p class="modal-card-title">
+                            <span class="icon is-small" style="margin-right:.5em"><i class="fa fa-bug has-text-{{ severityToClass $vulnerability.Severity }}-severity"></i></span>
+                            <span>{{$vulnerability.Summary}}</span>
+                            </p>
+                            <button class="delete modal-delete" aria-label="close"></button>
+                          </header>
+                          <section class="modal-card-body">
+                            <div class="content">
+                              <p>{{ formatHTML $vulnerability.Description }}</p>
+                              <table>
+                                    <tr>
+                                    <td><strong>Severity Score</strong></td>
+                                    <td>
+                                    <div class="tags has-addons">
+                                      <span class="tag">{{ roundScore $vulnerability.Score }}</span>
+                                      <span class="tag is-{{ severityToClass $vulnerability.Severity }}-severity">{{ severityToStr $vulnerability.Severity }}</span></td></tr>
+                                    </div>
+                                    </td>
+                                    </tr>
+
+                                    {{- if $vulnerability.Details }}
+                                    <tr><td><strong>Details</strong></td><td><pre style="white-space:pre-wrap; word-break: break-all;">{{ $vulnerability.Details }}<pre></td></tr>
+                                    {{- end}}
+
+                                    {{- if $vulnerability.ImpactDetails }}
+                                    <tr><td><strong>Impact</strong></td><td>{{ $vulnerability.ImpactDetails }}</td></tr>
+                                    {{- end}}
+
+                                    {{- if $vulnerability.Recommendations }}
+                                    <tr><td><strong>Recommendations</strong></td><td>
+                                        {{- range $j, $recommendation := $vulnerability.Recommendations }}
+                                        <p>{{ formatHTML $recommendation }}</p>
+                                        {{- end}}
+                                      </td></tr>
+                                      {{- end}}
+                                      {{- if $vulnerability.References }}
+                                      <tr class="vulnerability-references"><td><strong>References</strong></td><td>
+                                          <p>
+                                          {{- range $k, $reference := $vulnerability.References }}
+                                          <a target="_blank" href="{{ $reference }}" class="button reference">
+                                            <span>{{ urlDomain $reference }}</span>
+                                            <span class="icon is-small">
+                                              <i class="fa fa-external-link"></i>
+                                            </span>
+                                          </a>
+                                          {{- end}}
+                                          </p>
+                                        </td></tr>
+                                        {{- end}}
+
+                                    {{- range $j, $resource := $vulnerability.Resources }}
+                                    <tr class="vulnerability-references"><td><strong>{{ $resource.Name }}</strong></td><td>
+                                        <table class="table is-striped">
+                                          <thead>
+                                            {{- range $i, $header := $resource.Header }}
+                                            <th>{{ $header }}</th>
+                                            {{- end}}
+                                          </thead>
+                                          {{- range $j, $row := $resource.Rows }}
+                                            <tr>
+                                              {{- range $i, $header := $resource.Header }}
+                                                <td>{{ formatResources (index $row $header) }}</td>
+                                              {{- end}}
+                                            </tr>
+                                          {{- end}}
+                                        </table>
+                                      </td>
+                                    </tr>
+                                    {{- end}}
+                              </table>
+                            </div>
+                          </section>
+                          <footer class="modal-card-foot">
+                            <button class="button modal-delete">Close</button>
+                          </footer>
+                        </div>
+                      </div>
+                    </div>
+                    {{- end}}
+                  </div>
+                </div>
+                {{- end}}
+              </div>
+            </div>
+            {{- end}}
+          </div>
+          <div class="column" id="dashboard" style="display:none">
+            <canvas id="chart-assets" width="1000" height="300"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+    <script src="{{ upload "script.js" }}"></script>
+  </body>
+
+</html>

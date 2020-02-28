@@ -1,0 +1,10 @@
+dist: trusty
+language: go
+go:
+  - 1.13.3
+env:
+  global:
+    - CGO_ENABLED=1
+go_import_path: github.com/adevinta/security-overview
+before_script:
+  - go get -v ./...
