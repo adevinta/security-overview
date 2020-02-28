@@ -428,7 +428,7 @@ $(document).ready(function() {
                             <tr class="vulnerability-references"><td><strong>References</strong></td><td>
                                 <p>
                                 {{- range $j, $reference := .Vulnerability.References }}
-                                <a target="_blank" href="{{ $reference }}" class="button reference">
+                                <a target="_blank" rel="noopener noreferrer" href="{{ $reference }}" class="button reference">
                                   <span>{{ urlDomain $reference }}</span>
                                   <span class="icon is-small">
                                     <i class="fa fa-external-link"></i>
@@ -442,7 +442,7 @@ $(document).ready(function() {
                                     <tr><td><strong>Affected Assets</strong></td><td>
                                 <p>
                                         {{- range $j, $target := .AffectedTargets }}
-                                <a target="_blank" onclick="viewAssetVulnerability('{{ $target }}', '{{ $vuln.Vulnerability.Summary }}')" class="button reference">
+                                <a onclick="viewAssetVulnerability('{{ $target }}', '{{ $vuln.Vulnerability.Summary }}')" class="button reference">
                                   <span class="icon is-small">
                                     <i class="fa fa-server"></i>
                                   </span>
@@ -475,6 +475,14 @@ $(document).ready(function() {
                             <span class="icon is-small" style="margin-right:.5em"><i class="fa fa-bug has-text-{{ severityToClass $vulnerability.Severity }}-severity"></i></span>
                             <span>{{$vulnerability.Summary}}</span>
                             </p>
+                            <span style="margin-right:30px">
+                            <a class="has-text-danger show-report-problem">
+                              <span class="icon is-small">
+                                <i class="fa fa-exclamation-triangle"></i>
+                              </span>
+                              <span>Something wrong?</span>
+                            </a>
+                            </span>
                             <button class="delete modal-delete" aria-label="close"></button>
                           </header>
                           <section class="modal-card-body">
@@ -640,7 +648,7 @@ $(document).ready(function() {
                             <tr class="vulnerability-references"><td><strong>References</strong></td><td>
                                 <p>
                                 {{- range $j, $reference := .Vulnerability.References }}
-                                <a target="_blank" href="{{ $reference }}" class="button reference">
+                                <a target="_blank" rel="noopener noreferrer" href="{{ $reference }}" class="button reference">
                                   <span>{{ urlDomain $reference }}</span>
                                   <span class="icon is-small">
                                     <i class="fa fa-external-link"></i>
@@ -698,6 +706,14 @@ $(document).ready(function() {
                             <span class="icon is-small" style="margin-right:.5em"><i class="fa fa-bug has-text-{{ severityToClass $vulnerability.Severity }}-severity"></i></span>
                             <span>{{$vulnerability.Summary}}</span>
                             </p>
+                            <span style="margin-right:30px">
+                            <a class="has-text-danger show-report-problem" onclick="showReportProblem('{{ $vulnerability.Summary }}', '{{ $item.Asset }}')">
+                              <span class="icon is-small">
+                                <i class="fa fa-exclamation-triangle"></i>
+                              </span>
+                              <span>Something wrong?</span>
+                            </a>
+                            </span>
                             <button class="delete modal-delete" aria-label="close"></button>
                           </header>
                           <section class="modal-card-body">
@@ -733,7 +749,7 @@ $(document).ready(function() {
                                       <tr class="vulnerability-references"><td><strong>References</strong></td><td>
                                           <p>
                                           {{- range $k, $reference := $vulnerability.References }}
-                                          <a target="_blank" href="{{ $reference }}" class="button reference">
+                                          <a target="_blank" rel="noopener noreferrer" href="{{ $reference }}" class="button reference">
                                             <span>{{ urlDomain $reference }}</span>
                                             <span class="icon is-small">
                                               <i class="fa fa-external-link"></i>
@@ -786,6 +802,47 @@ $(document).ready(function() {
         </div>
       </div>
     </section>
+    <div class="modal" id="report-problem">
+      <div class="modal-background"></div>
+      <div class="modal-card" style="min-width:300px;width:40%">
+        <header class="modal-card-head">
+          <p class="modal-card-title">
+          <span class="icon is-small" style="margin-right:.5em"><i class="fa fa-exclamation-triangle"></i></span>
+          <span>Something wrong?</span>
+          </p>
+          <button class="delete modal-delete" aria-label="close"></button>
+        </header>
+        <section class="modal-card-body">
+          <div class="content">
+            <p>You are going to report a problem with the following finding:</p>
+            <table class="table">
+              <tr><td><strong>Team</strong></td><td id="report-problem-team">{{ .TeamName }}</td></tr>
+              <tr><td><strong>Scan</strong></td><td id="report-problem-scan">{{ .ScanID }}</td></tr>
+              <tr><td><strong>Issue</strong></td><td id="report-problem-issue"></td></tr>
+              <tr><td><strong>Asset</strong></td><td id="report-problem-asset"></td></tr>
+            </table> 
+            <p>What is the problem you are seeing?</p>
+            <p>
+            <div class="select">
+              <select id="report-problem-reason">
+                <option>False Positive</option>
+                <option>Incorrect Severity</option>
+                <option>Irrelevant Issue</option>
+                <option>Other</option>
+              </select>
+            </div>
+            </p>
+            <p><textarea id="report-problem-comments" class="textarea" placeholder="Add any additional comments here."></textarea></p>
+            <p>This information will be filled into a <a href="{{ .Jira }}">JIRA</a> ticket that the Security Team will review and address.</p>
+            <p>If you cannot access JIRA, you can contact us through <a href="{{ .ContactEmail }}">{{ .ContactEmail }}</a> or at <a href="{{ .ContactChannel }}">#vulcan</a>.</p>
+          </div>
+        </section>
+        <footer class="modal-card-foot">
+          <button class="button is-primary" onclick="reportProblem()">Report</button>
+          <button class="button modal-delete">Close</button>
+        </footer>
+      </div>
+    </div>
     <script src="{{ upload "script.js" }}"></script>
   </body>
 

@@ -2,6 +2,10 @@
 	background-color: #ffffff !important;
 }
 
+.show-report-problem {
+	border-bottom: 1px dotted;
+}
+
 .reference {
 	margin-bottom: 5px;
 }
