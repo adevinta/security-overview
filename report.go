@@ -53,7 +53,14 @@ func NewDetailedReport(configFile, teamName, scanID, teamID string) (*DetailedRe
 		conf:     conf,
 	}
 
-	detailedReport.awsConfig = aws.NewConfig().WithRegion("eu-west-1").WithMaxRetries(3)
+	// Set default region for AWS config.
+	if conf.S3.Region == "" {
+		conf.S3.Region = "eu-west-1"
+	}
+	detailedReport.awsConfig = aws.NewConfig().WithRegion(conf.S3.Region).WithMaxRetries(3)
+	if conf.S3.Endpoint != "" {
+		detailedReport.awsConfig.WithEndpoint(conf.S3.Endpoint).WithS3ForcePathStyle(true)
+	}
 
 	return detailedReport, nil
 }

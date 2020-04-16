@@ -5,6 +5,9 @@ ga_id = "id"
 upload = true
 private_bucket = "vulcan-insights-dev"
 public_bucket = "public-vulcan-insights-dev"
+# Optional
+# region = "eu-west-1"
+# endpoint = "http://localhost:9000"
 
 [persistence]
 endpoint = "https://vulcan-persistence-dev.example.com"
