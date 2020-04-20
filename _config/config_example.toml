@@ -5,6 +5,10 @@ ga_id = "id"
 upload = true
 private_bucket = "vulcan-insights-dev"
 public_bucket = "public-vulcan-insights-dev"
+# Optional
+# region = "eu-west-1"
+# endpoint = "http://minio:9000"
+# path_style = true
 
 [persistence]
 endpoint = "https://vulcan-persistence-dev.example.com"

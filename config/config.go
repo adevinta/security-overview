@@ -22,8 +22,11 @@ type analytics struct {
 
 type s3Config struct {
 	Upload        bool   `toml:"upload"`
+	Region        string `toml:"region"`
+	Endpoint      string `toml:"endpoint"`
 	PrivateBucket string `toml:"private_bucket"`
 	PublicBucket  string `toml:"public_bucket"`
+	PathStyle     bool   `toml:"path_style"`
 }
 
 type persistenceConfig struct {
