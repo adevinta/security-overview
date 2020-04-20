@@ -59,7 +59,7 @@ func NewDetailedReport(configFile, teamName, scanID, teamID string) (*DetailedRe
 	}
 	detailedReport.awsConfig = aws.NewConfig().WithRegion(conf.S3.Region).WithMaxRetries(3)
 	if conf.S3.Endpoint != "" {
-		detailedReport.awsConfig.WithEndpoint(conf.S3.Endpoint).WithS3ForcePathStyle(true)
+		detailedReport.awsConfig.WithEndpoint(conf.S3.Endpoint).WithS3ForcePathStyle(conf.S3.PathStyle)
 	}
 
 	return detailedReport, nil

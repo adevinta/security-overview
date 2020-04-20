@@ -26,6 +26,7 @@ type s3Config struct {
 	Endpoint      string `toml:"endpoint"`
 	PrivateBucket string `toml:"private_bucket"`
 	PublicBucket  string `toml:"public_bucket"`
+	PathStyle     bool   `toml:"path_style"`
 }
 
 type persistenceConfig struct {
