@@ -31,6 +31,7 @@ roadmap_link = "https://roadmap.example.com/roadmap.html"
 jira = "https://jira.example.com"
 
 [endpoints]
-vulcan_ui   = "https://vulcan.example.com/"
-view_report     = "vulcan-dev.example.com/api/v1/report?team_id=%s&scan_id=%s"
+vulcan_ui = "https://vulcan.example.com/"
+view_report = "vulcan-dev.example.com/api/v1/report?team_id=%s&scan_id=%s"
+# if redirect_url is empty view_report will be used in the email link and scheme needs to be specified.
 redirect_url = "https://vulcan-insights.example.com/index.html?reportUrl="

@@ -85,30 +85,31 @@ func GenerateOverview(conf config.Config, awsConfig *aws.Config, resourcesPath, 
 	if err != nil {
 		return "", err
 	}
-	// Wrap the link over the redirect endpoint that ensures the user is connected to heimdall.
-	// Example of RedirectURL https://vulcan-insights-redirect.example.com/index.html?reportUrl=vulcan-dev.example.com/api/v1/report?team_id=team-id&scan_id=scan-id
-	RedirectURLURL, err := url.Parse(conf.Endpoints.RedirectURL)
-	if err != nil {
-		return "", err
+	RedirectURLURL := fullReportURL
+	// If RedirectURL is not empty, we want to wrap report access through VPN.
+	if conf.Endpoints.RedirectURL != "" {
+		// Wrap the link over the redirect endpoint that ensures the user is connected to VPN.
+		// Example of RedirectURL https://vulcan-insights-redirect.example.com/index.html?reportUrl=vulcan-dev.example.com/api/v1/report?team_id=team-id&scan_id=scan-id
+		RedirectURLURL, err = url.Parse(conf.Endpoints.RedirectURL)
+		if err != nil {
+			return "", err
+		}
+		// The query param on the RedirectURLURL that contains the path to redirect after
+		// checking the user is on Heimdall needs to be specified without the schema.
+		RedirectURLURL.RawQuery = RedirectURLURL.RawQuery + url.QueryEscape(fullReportURL.String())
 	}
-	// The query param on the RedirectURLURL that contains the path to redirect after
-	// checking the user is on Heimdall needs to be specified without the schema.
-	RedirectURLURL.RawQuery = RedirectURLURL.RawQuery + url.QueryEscape(fullReportURL.String())
-
 	overview := Overview{
-		ResourcesPath:  resourcesPath,
-		LocalTempDir:   conf.General.LocalTempDir,
-		CompanyName:    conf.General.CompanyName,
-		SupportEmail:   conf.General.SupportEmail,
-		ContactEmail:   conf.General.ContactEmail,
-		ContactChannel: conf.General.ContactChannel,
-		Bucket:         conf.S3.PublicBucket,
-		Folder:         folder,
-		Filename:       reportData.ScanID + "-overview",
-		Extension:      ".html",
-		LinkFullReport: RedirectURLURL.String(),
-		// LinkFullReport:   conf.Proxy.Endpoint + "/" + folder + "/" + reportData.ScanID + "-full-report.html",
-		// PathToFullReport: strings.Replace(conf.Proxy.Endpoint, "https://", "", -1) + "/" + folder + "/" + reportData.ScanID + "-full-report.html",
+		ResourcesPath:        resourcesPath,
+		LocalTempDir:         conf.General.LocalTempDir,
+		CompanyName:          conf.General.CompanyName,
+		SupportEmail:         conf.General.SupportEmail,
+		ContactEmail:         conf.General.ContactEmail,
+		ContactChannel:       conf.General.ContactChannel,
+		Bucket:               conf.S3.PublicBucket,
+		Folder:               folder,
+		Filename:             reportData.ScanID + "-overview",
+		Extension:            ".html",
+		LinkFullReport:       RedirectURLURL.String(),
 		Proxy:                conf.Proxy.Endpoint,
 		UploadToS3:           conf.S3.Upload,
 		AWSConfig:            awsConfig,
