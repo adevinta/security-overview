@@ -123,7 +123,7 @@ $(document).ready(function() {
     </nav>
     <section class="section">
       <div class="container">
-        <div class="tabs is-centered is-medium is-boxed">
+        <div class="tabs is-right is-medium is-boxed">
           <ul>
             <li id="tab-issues" class="is-active">
               <a>
@@ -143,10 +143,11 @@ $(document).ready(function() {
                 <span>Manage Assets</span>
               </a>
             </li>
-            <li id="tab-dashboard">
+            <li id="tab-dashboard" class="external-link-tab" data-url="{{.DashboardURL}}">
               <a>
                 <span class="icon is-small"><i class="fa fa-pie-chart"></i></span>
                 <span>Dashboard</span>
+                <span class="tag is-success" style="margin-left:10px">NEW!</span>
               </a>
             </li>
             <li id="tab-details" class="external-link-tab" data-url="{{.DetailsURL}}">
@@ -289,15 +290,11 @@ $(document).ready(function() {
               <button class="delete"></button>
               <b>New Features</b>
               <ul style="list-style-type:square;margin:5px 0 5px 20px">
-                <li>You can now manage the assets for your team through this page by clicking on the "Manage Assets" tab. This requires you to be an owner of your team.</li>
-                <li>You can now manage which users can access this report or are allowed to manage assets through the <a href="{{ .DocumentationLink }}">Vulcan API</a>.</li>
-                <li>Check the details of how are you being scanned by clicking on the "Details" tab.</li>
+                <li>This report and other features can now be found in the <a href="{{.HomeURL}}">new Vulcan home page</a>.</li>
+                <li>You can now get an overview of your team's status and progress in a brand new dashboard.</li>
+                <li>A new check is available which will scan you web servers for <a href="https://github.com/adevinta/vulcan-checks/blob/master/cmd/vulcan-exposed-http-resources/resources.yaml">accidentally exposed resources</a>.</li>
+                <li>A new check to scan Docker images using <a href="https://github.com/aquasecurity/trivy">Trivy</a> has been added, providing detection for twice as many vulnerabilities.</li>
               </ul>
-              <p>Feel free to check our <a href="{{ .RoadmapLink }}">roadmap</a>!</p>
-            </div>
-            <div class="notification">
-              <button class="delete"></button>
-              <p><strong>Note:</strong> This report is still a work in progress and not all UI elements are fully functional. Please, bear with us as we improve it and feel free to <a href="https://goo.gl/forms/EZZMER8xL5uGdj6l1">give us your feedback</a>!</p>
             </div>
           </div>
           <div id="issues" class="column is-three-quarters">
