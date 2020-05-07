@@ -14,6 +14,7 @@ import (
 
 const ManageAssetsPath = "assets/edit-assets.html"
 const DetailsPath = "assets/index.html"
+const DashboardPath = "dashboard.html"
 
 func maxScore(vulns []vulcan.Vulnerability) float32 {
 	if len(vulns) == 0 {
@@ -84,8 +85,10 @@ func GenerateFullReport(conf config.Config, awsConfig *aws.Config, resourcesPath
 	fullReport := FullReport{
 		ResourcesPath:   resourcesPath,
 		LocalTempDir:    conf.General.LocalTempDir,
+		HomeURL:         conf.Endpoints.VulcanUI,
 		ManageAssetsURL: conf.Endpoints.VulcanUI + ManageAssetsPath,
 		DetailsURL:      conf.Endpoints.VulcanUI + DetailsPath,
+		DashboardURL:    conf.Endpoints.VulcanUI + DashboardPath,
 		Bucket:          conf.S3.PrivateBucket,
 		Folder:          folder,
 		Filename:        reportData.ScanID + "-full-report",

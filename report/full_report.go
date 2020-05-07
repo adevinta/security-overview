@@ -71,10 +71,11 @@ type FullReport struct {
 
 	GAID string `json:"-" xml:"-"`
 
-	JSONExportURL   string `json:"-" xml:"-"`
-	ManageAssetsURL string `json:"-" xml:"-"`
-
+	HomeURL           string `json:"-" xml:"-"`
+	JSONExportURL     string `json:"-" xml:"-"`
+	ManageAssetsURL   string `json:"-" xml:"-"`
 	DetailsURL        string `json:"-" xml:"-"`
+	DashboardURL      string `json:"-" xml:"-"`
 	DocumentationLink string `json:"-" xml:"-"`
 	RoadmapLink       string `json:"-" xml:""`
 }
