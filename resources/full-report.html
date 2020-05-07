@@ -290,15 +290,11 @@ $(document).ready(function() {
               <button class="delete"></button>
               <b>New Features</b>
               <ul style="list-style-type:square;margin:5px 0 5px 20px">
-                <li>This report and other features can now be found in the <a href="{{ .HomeURL }}">new Vulcan home page</a>.</li>
+                <li>This report and other features can now be found in the <a href="{{.HomeURL}}">new Vulcan home page</a>.</li>
                 <li>You can now get an overview of your team's status and progress in a brand new dashboard.</li>
                 <li>A new check is available which will scan you web servers for <a href="https://github.com/adevinta/vulcan-checks/blob/master/cmd/vulcan-exposed-http-resources/resources.yaml">accidentally exposed resources</a>.</li>
                 <li>A new check to scan Docker images using <a href="https://github.com/aquasecurity/trivy">Trivy</a> has been added, providing detection for twice as many vulnerabilities.</li>
               </ul>
-            </div>
-            <div class="notification">
-              <button class="delete"></button>
-              <p><strong>Note:</strong> This report is still a work in progress and not all UI elements are fully functional. Please, bear with us as we improve it and feel free to <a href="https://sch-chat.slack.com/archives/C90P83LAY">give us your feedback</a>!</p>
             </div>
           </div>
           <div id="issues" class="column is-three-quarters">
