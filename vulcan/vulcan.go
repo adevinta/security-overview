@@ -14,8 +14,6 @@ import (
 	vulcanreport "github.com/adevinta/vulcan-report"
 )
 
-const numWorkers = 5
-
 func (rp *ReportData) worker(done <-chan struct{}, conf config.Config) {
 	defer rp.workerWG.Done()
 	var exit bool
@@ -53,7 +51,7 @@ func GetReportData(conf config.Config, scanID string) (*ReportData, error) {
 	m := db.NewMemDB()
 	g := groupie.New(m)
 
-	rp := &ReportData{ScanID: scanID, countChecks: 0, chanChecks: make(chan string, numWorkers), groupie: g}
+	rp := &ReportData{ScanID: scanID, countChecks: 0, chanChecks: make(chan string, conf.Results.Workers), groupie: g}
 	//We need to retrieve the scan date because the reports on vulcan Results
 	//are partitioned by date
 	date, err := persistence.GetDate(conf.Persistence.Endpoint, rp.ScanID)
@@ -71,7 +69,7 @@ func GetReportData(conf config.Config, scanID string) (*ReportData, error) {
 	log.Printf("Getting reports from results api...")
 	rp.Reports = []vulcanreport.Report{}
 	ctx, done := context.WithCancel(context.Background())
-	for i := 0; i < numWorkers; i++ {
+	for i := 0; i < conf.Results.Workers; i++ {
 		rp.workerWG.Add(1)
 		go rp.worker(ctx.Done(), conf)
 	}
