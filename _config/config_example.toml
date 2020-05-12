@@ -15,6 +15,7 @@ endpoint = "https://vulcan-persistence-dev.example.com"
 
 [results]
 endpoint = "https://vulcan-results-dev.example.com"
+workers = 5
 
 [proxy]
 endpoint = "https://insights-dev.vulcan.example.com"

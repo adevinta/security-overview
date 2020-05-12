@@ -6,6 +6,10 @@ import (
 	"github.com/BurntSushi/toml"
 )
 
+const (
+	defResultsWorkers = 5
+)
+
 type Config struct {
 	Analytics   analytics         `toml:"analytics"`
 	S3          s3Config          `toml:"s3"`
@@ -35,6 +39,7 @@ type persistenceConfig struct {
 
 type resultsConfig struct {
 	Endpoint string `toml:"endpoint"`
+	Workers  int    `toml:"workers"`
 }
 
 type proxy struct {
@@ -68,6 +73,11 @@ func ReadConfig(configFile string) (Config, error) {
 	var config Config
 	if _, err := toml.Decode(string(configData), &config); err != nil {
 		return Config{}, err
+	}
+
+	// Parse default config values.
+	if config.Results.Workers == 0 {
+		config.Results.Workers = defResultsWorkers
 	}
 
 	return config, nil
