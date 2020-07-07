@@ -14,7 +14,7 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/microcosm-cc/bluemonday"
-	blackfriday "gopkg.in/russross/blackfriday.v2"
+	blackfriday "github.com/russross/blackfriday/v2"
 
 	"github.com/adevinta/security-overview/utils"
 	"github.com/adevinta/security-overview/vulcan"
