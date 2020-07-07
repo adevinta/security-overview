@@ -5,7 +5,7 @@ go 1.13
 require (
 	github.com/AllenDang/simhash v0.0.0-20130730023417-eb7ce13bfe06
 	github.com/BurntSushi/toml v0.3.1
-	github.com/adevinta/vulcan-groupie v0.0.0-20200220161050-a1aed2ec56f4
+	github.com/adevinta/vulcan-groupie v0.0.0-20200707090846-1581ca8af51c
 	github.com/adevinta/vulcan-report v0.0.0-20190503133936-d8a2d4cb18ff
 	github.com/aws/aws-sdk-go v1.16.18-0.20190110195938-d2b33d26b610
 	github.com/danfaizer/go-chart v2.0.2-0.20190111100232-3508c5c28f50+incompatible
