@@ -116,7 +116,6 @@ func generateFromFile(path string, config string) error {
 		fmt.Printf("%v", err)
 		os.Exit(1)
 	}
-	fmt.Println(dr.URL)
 	return nil
 }
 

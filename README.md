@@ -48,5 +48,5 @@ It works by supporting three scenarios:
 
    Example of the command:
    ```
-    vulcan-security-overview -config "security-overview.toml" -check report.json
+    vulcan-security-overview -config "security-overview.toml" -check check_report.json
    ```
