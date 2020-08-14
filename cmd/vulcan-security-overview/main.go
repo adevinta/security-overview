@@ -10,6 +10,7 @@ import (
 
 	insights "github.com/adevinta/security-overview"
 	"github.com/adevinta/security-overview/report"
+	uuid "github.com/satori/go.uuid"
 )
 
 var (
@@ -25,10 +26,12 @@ Takes a path to the json file. for instance ./report.json`)
 	assetsURL  = flag.String("assetsurl", "", "[required with regen] specifies the base url where the manage")
 	detailsURL = flag.String("detailsurl", "", "[required with regen] specifies the base url of the details")
 	output     = flag.String("output", "", "[required with regen] specifies the directory to save regenerated report")
+	check      = flag.String("check", "", `generates the security overview for test pourposes from a single check report stored in 
+	a file. The only required flag is the config param`)
 )
 
 func checkParams() bool {
-	flag.Parse()
+
 	if (*scanID == "" || *teamName == "" || *configFile == "" || *teamID == "") && !*dummy && *regen == "" {
 		flag.Usage()
 		return false
@@ -41,6 +44,14 @@ func checkRegenerateParams() bool {
 }
 
 func main() {
+	flag.Parse()
+	if *check != "" {
+		if *configFile == "" {
+			flag.Usage()
+		}
+		generateFromFile(*check, *configFile)
+		return
+	}
 	if !checkParams() {
 		return
 	}
@@ -79,6 +90,33 @@ func main() {
 		fmt.Printf("%v", err)
 		os.Exit(1)
 	}
+}
+
+func generateFromFile(path string, config string) error {
+	teamName := "Team 1"
+	uuid, err := uuid.NewV1()
+	if err != nil {
+		return err
+	}
+	id := uuid.String()
+	dr, err := insights.NewDetailedReport(config, teamName, id, id)
+	if err != nil {
+		fmt.Printf("%v", err)
+		os.Exit(1)
+	}
+
+	err = dr.GenerateLocalFilesFromCheck(path)
+	if err != nil {
+		fmt.Printf("%v", err)
+		os.Exit(1)
+	}
+
+	err = dr.UploadFilesToS3()
+	if err != nil {
+		fmt.Printf("%v", err)
+		os.Exit(1)
+	}
+	return nil
 }
 
 func regenerateReport() error {

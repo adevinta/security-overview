@@ -17,7 +17,7 @@ go install ./...
 
 
 
-It works by supporting two scenarios:
+It works by supporting three scenarios:
 
 1. Generate and optionally upload a report.
 
@@ -40,3 +40,13 @@ It works by supporting two scenarios:
     vulcan-security-overview -regen .localtest/test-report.json -resources _resources/ -presources _public_resources/ --assetsurl https://example.com/assets  -output .localtest/reports
 
     ```
+3. Generate a full report from a file with a check report.
+
+   This scenario is useful when adjusting the output of a check.
+   This command takes, apart from the config file, a parameter pointing to a file that contains a check report.
+   It generates and uploads to s3 a full report with the findings of that check.
+
+   Example of the command:
+   ```
+    vulcan-security-overview -config "security-overview.toml" -check check_report.json
+   ```
