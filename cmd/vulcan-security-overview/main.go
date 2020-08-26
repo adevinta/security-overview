@@ -27,7 +27,7 @@ Takes a path to the json file. for instance ./report.json`)
 	detailsURL = flag.String("detailsurl", "", "[required with regen] specifies the base url of the details")
 	output     = flag.String("output", "", "[required with regen] specifies the directory to save regenerated report")
 	check      = flag.String("check", "", `generates the security overview for test pourposes from a single check report stored in 
-	a file. The only required flag is the config param`)
+a file. The only other required flag is -config. Example: vulcan-security-overview -config ".security-overview.toml" -check check_report.json`)
 )
 
 func checkParams() bool {

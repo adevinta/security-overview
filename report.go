@@ -171,25 +171,6 @@ func (d *DetailedReport) GenerateLocalFilesFromCheck(path string) error {
 		return err
 	}
 
-	// Generate files for the Overview. The files will be stored in this way:
-	// <scan-id>/
-	//	  '
-	//    '--<scan-id>-overview.html
-	//	  '
-	//    '--<public-bucket>/
-	//	         '
-	//           '--<hex(sha256(teamName))>/
-	//	                '
-	//                  '--<YYYY-MM-DD>/
-	//                         '
-	//                         '--<Most Vulnerable Assets>.png
-	//                         '
-	//                         '--<Impact Distribution>.png
-	d.Email, err = report.GenerateOverview(d.conf, d.awsConfig, d.conf.General.ResourcesPath, d.folder, reportData, d.teamName, d.teamID, d.scanID)
-	if err != nil {
-		return err
-	}
-
 	// Generate files for the Full Report. The files will be stored in this way:
 	// <scan-id>/
 	//    '

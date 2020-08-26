@@ -126,7 +126,7 @@ func GetReportDataFromFile(conf config.Config, scanID, path string) (*ReportData
 	rp := &ReportData{ScanID: scanID, countChecks: 0, groupie: g}
 	date := time.Now().Format("2006-01-02")
 	rp.Date = date
-	log.Printf("Getting reports from results api...")
+	log.Printf("Getting reports from results json file...")
 	rp.Reports = []vulcanreport.Report{}
 
 	content, err := ioutil.ReadFile(path)
