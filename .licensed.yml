@@ -1,0 +1,22 @@
+source_path: ./**/*
+shared_cache: true
+ignored:
+  go:
+    - github.mpi-internal.com/**/*
+allowed:
+  - mit
+  - apache-2.0
+  - bsd-2-clause
+  - bsd-3-clause
+reviewed:
+  go:
+    -  golang.org/x/image/draw
+    -  golang.org/x/image/font
+    -  golang.org/x/image/math/f64
+    -  golang.org/x/image/math/fixed
+    -  golang.org/x/net/html
+    -  golang.org/x/net/html/atom
+    - github.com/golang/freetype/raster
+    - github.com/golang/freetype/truetype
+    - github.com/russross/blackfriday/v2
+    - github.com/jmespath/go-jmespath

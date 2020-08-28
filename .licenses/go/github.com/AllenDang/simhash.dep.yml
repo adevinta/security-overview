@@ -1,0 +1,9 @@
+---
+name: github.com/AllenDang/simhash
+version: v0.0.0-20130730023417-eb7ce13bfe06
+type: go
+summary: 
+homepage: https://godoc.org/github.com/AllenDang/simhash
+license: none
+licenses: []
+notices: []
