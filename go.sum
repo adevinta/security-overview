@@ -9,8 +9,8 @@ github.com/PuerkitoBio/purell v1.1.0/go.mod h1:c11w/QuzBsJSee3cPx9rAFu61PvFxuPbt
 github.com/PuerkitoBio/purell v1.1.1/go.mod h1:c11w/QuzBsJSee3cPx9rAFu61PvFxuPbtSwDGJws/X0=
 github.com/PuerkitoBio/urlesc v0.0.0-20170810143723-de5bf2ad4578/go.mod h1:uGdkoq3SwY9Y+13GIhn11/XLaGBb4BfwItxLd5jeuXE=
 github.com/adevinta/vulcan-core-cli v0.0.0-20200114155149-4786fe7a4285/go.mod h1:2F3T1ezhK2DY1GIDxdaqX7bHmsPdaBZYgVfb40Ljr/0=
-github.com/adevinta/vulcan-groupie v0.0.0-20200731150736-44c47b8cae13 h1:ciD4/5iO9GayA7vgIWw2dLZ5HXCnhRI7ZrYMlKW85AY=
-github.com/adevinta/vulcan-groupie v0.0.0-20200731150736-44c47b8cae13/go.mod h1:5gqG8yc4TTYhe0PlBCmuYZmmQoFoTe4yZ0V2OK492co=
+github.com/adevinta/vulcan-groupie v0.0.0-20200831130152-6edaf8517386 h1:zj7t+Mh6p3v/mlLTb6+GWUhHWjmxOQ3AJsHKi8QqqSI=
+github.com/adevinta/vulcan-groupie v0.0.0-20200831130152-6edaf8517386/go.mod h1:5gqG8yc4TTYhe0PlBCmuYZmmQoFoTe4yZ0V2OK492co=
 github.com/adevinta/vulcan-report v0.0.0-20190503133936-d8a2d4cb18ff h1:ZazuZSOfV8oo70SWdjLQi+In4GSmJCA2rwsliyz9KNs=
 github.com/adevinta/vulcan-report v0.0.0-20190503133936-d8a2d4cb18ff/go.mod h1:GtAon6TymHFTOPwRdR7SHun/TSM1kyPMQYXxGLTR8eQ=
 github.com/airbrake/gobrake v3.6.1+incompatible/go.mod h1:wM4gu3Cn0W0K7GUuVWnlXZU11AGBXMILnrdOU8Kn00o=
