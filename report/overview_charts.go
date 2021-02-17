@@ -72,6 +72,13 @@ func (o *Overview) HandleVulnerabilityPerAsset() error {
 		}
 	}
 
+	// We need at least one value
+	if len(values) == 0 {
+		values = []chart.Value{
+			{Value: 1},
+		}
+	}
+
 	newPieChart := chart.PieChart{
 		Width:  350,
 		Height: 350,
