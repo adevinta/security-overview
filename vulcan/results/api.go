@@ -1,18 +1,22 @@
 package results
 
 import (
-	"fmt"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 
-	"github.com/adevinta/vulcan-report"
+	report "github.com/adevinta/vulcan-report"
 )
 
 //GetReport retrieves a report stored on vulcan results
-func GetReport(baseEndpoint, date, scanID, checkID string) (*report.Report, error) {
-	endpoint := baseEndpoint + fmt.Sprintf("/v1/reports/dt=%s/scan=%s/%s.json", date, scanID, checkID)
-	//fmt.Printf("Getting results for:%s", endpoint)
-	resp, err := http.Get(endpoint)
+func GetReport(baseEndpoint, rurl string) (*report.Report, error) {
+	u, err := url.Parse(baseEndpoint)
+	if err != nil {
+		return nil, err
+	}
+	reportURL, err := url.Parse(rurl)
+	u.Path = reportURL.Path
+	resp, err := http.Get(u.String())
 	if err != nil {
 		return nil, err
 	}

@@ -3,6 +3,7 @@ package vulcan
 import (
 	"sync"
 
+	"github.com/adevinta/security-overview/vulcan/persistence"
 	"github.com/adevinta/vulcan-groupie/pkg/groupie"
 	"github.com/adevinta/vulcan-groupie/pkg/models"
 	vulcanreport "github.com/adevinta/vulcan-report"
@@ -30,7 +31,7 @@ type ReportData struct {
 	workerWG    sync.WaitGroup
 	countChecks int
 	mu          sync.RWMutex
-	chanChecks  chan string
+	chanChecks  chan persistence.Check
 	groupie     *groupie.Groupie
 }
 
