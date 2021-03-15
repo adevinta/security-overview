@@ -2,8 +2,11 @@ package vulcan
 
 import (
 	"context"
+	"encoding/json"
+	"io/ioutil"
 	"log"
 	"sort"
+	"time"
 
 	"github.com/adevinta/security-overview/config"
 	"github.com/adevinta/security-overview/vulcan/persistence"
@@ -88,6 +91,54 @@ func GetReportData(conf config.Config, scanID string) (*ReportData, error) {
 	// This waits for all workers to be finished.
 	rp.workerWG.Wait()
 
+	rp.setRisk()
+	rp.setActionRequired()
+	rp.setAssets()
+	rp.setChecktypes()
+	rp.setVulnerabilitiesPerImpact()
+	rp.setVulnerabilitiesPerAssets()
+	rp.setTopVulnerabilities()
+	rp.setNumberOfVulnerableAssets()
+	rp.setAllVulnerabilities()
+
+	// Update grouping database with scan before retrieving groups.
+	if err := g.UpdateFromScan(scanID, date, rp.Reports); err != nil {
+		return nil, err
+	}
+
+	if err := rp.setGroups(); err != nil {
+		return nil, err
+	}
+
+	if err := rp.setGroupsPerAsset(); err != nil {
+		return nil, err
+	}
+
+	return rp, nil
+}
+
+// GetReportDataFromFile extracts information about a check report
+// stored in file.
+func GetReportDataFromFile(conf config.Config, scanID, path string) (*ReportData, error) {
+	m := db.NewMemDB()
+	g := groupie.New(m)
+
+	rp := &ReportData{ScanID: scanID, countChecks: 0, groupie: g}
+	date := time.Now().Format("2006-01-02")
+	rp.Date = date
+	log.Printf("Getting reports from results json file...")
+	rp.Reports = []vulcanreport.Report{}
+
+	content, err := ioutil.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+	var r vulcanreport.Report
+	err = json.Unmarshal(content, &r)
+	if err != nil {
+		return nil, err
+	}
+	rp.Reports = append(rp.Reports, r)
 	rp.setRisk()
 	rp.setActionRequired()
 	rp.setAssets()

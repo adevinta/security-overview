@@ -140,6 +140,62 @@ func (d *DetailedReport) GenerateLocalFiles() error {
 	return nil
 }
 
+// GenerateLocalFilesFromCheck grabs the check report stored in a file
+// and generates the html report using that unique check report.
+func (d *DetailedReport) GenerateLocalFilesFromCheck(path string) error {
+
+	reportData, err := vulcan.GetReportDataFromFile(d.conf, d.scanID, path)
+	if err != nil {
+		return err
+	}
+	// NOTE: Grouping is done using vulcan-groupie in the vulcan package.
+	// reportData = groupVulnerabilitiesByTextSimilarity(reportData)
+
+	buf, err := json.Marshal(reportData)
+	if err != nil {
+		return err
+	}
+
+	ioutil.WriteFile(d.teamName+".json", buf, 0600)
+
+	// Assemble the folder name. The format is:	hex(sha256(teamName))/YYYY-MM-DD
+	// The idea behind this is that if we use teams names as folder names, then
+	// it would be easy to predict in which folders the reports are stored for
+	// each team
+	sha := fmt.Sprintf("%x", sha256.Sum256([]byte(d.teamName)))
+	d.folder = filepath.Join(sha, reportData.Date)
+
+	// Remove previously generated files and folders and then recreate them.
+	err = d.cleanLocalFolders()
+	if err != nil {
+		return err
+	}
+
+	// Generate files for the Full Report. The files will be stored in this way:
+	// <scan-id>/
+	//    '
+	//    '--<private-bucket>/
+	//           '
+	//           '--<hex(sha256(teamName))>/
+	//                  '
+	//                  '--<YYYY-MM-DD>/
+	//                         '
+	//                         '--<scan-id>-full-report.html
+	//                         '
+	//                         '--<script>.js
+	//
+	// The result will be the the URL in which the Full Report will be available.
+	// The Overview HTML will be generated pointing to this link.
+	d.URL, err = report.GenerateFullReport(d.conf, d.awsConfig, d.conf.General.ResourcesPath, d.folder, reportData, d.teamName)
+	if err != nil {
+		return err
+	}
+
+	d.Risk = int(reportData.Risk)
+
+	return nil
+}
+
 func (d *DetailedReport) cleanLocalFolders() error {
 	err := os.RemoveAll(filepath.Join(d.conf.General.LocalTempDir, d.scanID))
 	if err != nil {
