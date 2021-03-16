@@ -24,7 +24,7 @@ func (rp *ReportData) worker(done <-chan struct{}, conf config.Config) {
 	for !exit {
 		select {
 		case check, _ := <-rp.chanChecks:
-			report, err := results.GetReport(conf.Results.Endpoint, rp.Date, rp.ScanID, check)
+			report, err := results.GetReport(conf.Results.Endpoint, check.Report)
 			if err != nil {
 				log.Printf("ERROR getting results for check-id: %s. Error detail:%v.\n The security overview will not include results of these checks.", check, err)
 				rp.reportWG.Done()
@@ -54,7 +54,7 @@ func GetReportData(conf config.Config, scanID string) (*ReportData, error) {
 	m := db.NewMemDB()
 	g := groupie.New(m)
 
-	rp := &ReportData{ScanID: scanID, countChecks: 0, chanChecks: make(chan string, conf.Results.Workers), groupie: g}
+	rp := &ReportData{ScanID: scanID, countChecks: 0, chanChecks: make(chan persistence.Check, conf.Results.Workers), groupie: g}
 	//We need to retrieve the scan date because the reports on vulcan Results
 	//are partitioned by date
 	date, err := persistence.GetDate(conf.Persistence.Endpoint, rp.ScanID)
@@ -80,7 +80,7 @@ func GetReportData(conf config.Config, scanID string) (*ReportData, error) {
 	log.Printf("Sending %d checks to channel...", len(checks))
 	for _, check := range checks {
 		rp.reportWG.Add(1)
-		rp.chanChecks <- check.ID
+		rp.chanChecks <- check
 	}
 
 	// This waits for all the reports to be done.
