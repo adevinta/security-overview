@@ -71,8 +71,6 @@ func (d *DetailedReport) GenerateLocalFiles() error {
 	if err != nil {
 		return err
 	}
-	// NOTE: Grouping is done using vulcan-groupie in the vulcan package.
-	// reportData = groupVulnerabilitiesByTextSimilarity(reportData)
 
 	buf, err := json.Marshal(reportData)
 	if err != nil {
@@ -146,8 +144,6 @@ func (d *DetailedReport) GenerateLocalFilesFromCheck(path string) error {
 	if err != nil {
 		return err
 	}
-	// NOTE: Grouping is done using vulcan-groupie in the vulcan package.
-	// reportData = groupVulnerabilitiesByTextSimilarity(reportData)
 
 	buf, err := json.Marshal(reportData)
 	if err != nil {
