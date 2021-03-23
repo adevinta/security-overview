@@ -18,7 +18,6 @@ var (
 	teamName   = flag.String("team-name", "", "[required] Team name. This will be used as the key for future Reports. Ex: -team-name=\"Purple Team\"")
 	teamID     = flag.String("team-id", "", "[required] Team id. The vulcan-api teamid that the scan belongs to")
 	configFile = flag.String("config", "", "[required] config file")
-	dummy      = flag.Bool("dummy", false, "use dummy data (see dummy.go)")
 	regen      = flag.String("regen", "", `regenerate a report from json report previously generated.
 Takes a path to the json file. for instance ./report.json`)
 	resources  = flag.String("resources", "", "[required with regen] path to the folder containing non public resources")
@@ -32,7 +31,7 @@ a file. The only other required flag is -config. Example: vulcan-security-overvi
 
 func checkParams() bool {
 
-	if (*scanID == "" || *teamName == "" || *configFile == "" || *teamID == "") && !*dummy && *regen == "" {
+	if (*scanID == "" || *teamName == "" || *configFile == "" || *teamID == "") && *regen == "" {
 		flag.Usage()
 		return false
 	}
@@ -53,11 +52,6 @@ func main() {
 		return
 	}
 	if !checkParams() {
-		return
-	}
-
-	if *dummy {
-		generateDummy()
 		return
 	}
 
