@@ -10,9 +10,7 @@ import (
 	"mime"
 	"os"
 	"path/filepath"
-	"strings"
 
-	"github.com/AllenDang/simhash"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
@@ -73,8 +71,6 @@ func (d *DetailedReport) GenerateLocalFiles() error {
 	if err != nil {
 		return err
 	}
-	// NOTE: Grouping is done using vulcan-groupie in the vulcan package.
-	// reportData = groupVulnerabilitiesByTextSimilarity(reportData)
 
 	buf, err := json.Marshal(reportData)
 	if err != nil {
@@ -148,8 +144,6 @@ func (d *DetailedReport) GenerateLocalFilesFromCheck(path string) error {
 	if err != nil {
 		return err
 	}
-	// NOTE: Grouping is done using vulcan-groupie in the vulcan package.
-	// reportData = groupVulnerabilitiesByTextSimilarity(reportData)
 
 	buf, err := json.Marshal(reportData)
 	if err != nil {
@@ -272,128 +266,4 @@ func (d *DetailedReport) uploadFile(bucket, key, localPath, filename string) err
 	}
 
 	return nil
-}
-
-// groupVulnerabilitiesByTextSimilarity groups vulnerabilities by matching
-// Summary and Recommendations.
-// TODO: Consider moving this function to vulcan-groupie, if we find is interesting
-// to continue grouping by Similarity.
-func groupVulnerabilitiesByTextSimilarity(reportData *vulcan.ReportData) *vulcan.ReportData {
-	// Iterate over reportData.Vulnerabilities and assemble an array of
-	// vulcan vulnerabilties
-	vulnStore := []*vulcan.Vulnerability{}
-	for i := 0; i < len(reportData.Vulnerabilities); i++ {
-		vulnStore = append(vulnStore, &reportData.Vulnerabilities[i])
-	}
-
-	// Iterate over vulcan vulnerabilties
-	for i := 0; i < len(vulnStore); i++ {
-		// ignore empty records (those records will be empty because they were grouped on previous iterations)
-		if vulnStore[i] == nil {
-			continue
-		}
-
-		// create a new vulnerabilty to group other similar vulnerabilities
-		vGroup := &vulcan.Vulnerability{}
-
-		// Add the current vulnerability to this group
-		vGroup.Vulnerability.Vulnerabilities = append(vGroup.Vulnerability.Vulnerabilities, vulnStore[i].Vulnerability)
-
-		// Break the Summary into separated words
-		// ex.: PHP Multiple Vulnerabilities ---> [PHP, Multiple, Vulnerabilities]
-		words1 := strings.Split(strings.ToLower(vulnStore[i].Vulnerability.Summary), " ")
-
-		// Iterate over the remaining vulnerabilties
-		for j := i + 1; j < len(vulnStore); j++ {
-			// don't group if:
-			// - vulnerabilities are not from the same asset
-			// - vulnerabilities are not from vulcan-nessus
-			if vulnStore[i] == nil ||
-				vulnStore[j] == nil ||
-				vulnStore[i].Asset != vulnStore[j].Asset ||
-				!strings.Contains(vulnStore[i].CheckType, "nessus") ||
-				!strings.Contains(vulnStore[j].CheckType, "nessus") {
-				continue
-			}
-
-			// ignore empty records (those records will be empty because they were grouped on previous iterations)
-			if vulnStore[j] != nil {
-
-				// Break the Summary into separated words
-				// ex.: PHP Multiple Vulnerabilities ---> [PHP, Multiple, Vulnerabilities]
-				words2 := strings.Split(strings.ToLower(vulnStore[j].Vulnerability.Summary), " ")
-
-				// we want to group vulnerabilities that have the same preffix
-				if words1[0] == words2[0] {
-					// ignore this entry if there are no recommendations
-					if len(vulnStore[i].Vulnerability.Recommendations) == 0 ||
-						len(vulnStore[j].Vulnerability.Recommendations) == 0 {
-						continue
-					}
-
-					// get the summary similarity
-					summarySimilarity := simhash.GetLikenessValue(
-						vulnStore[i].Vulnerability.Summary,
-						vulnStore[j].Vulnerability.Summary)
-
-					// get the recommendations similarity
-					recommendationsSimilarity := simhash.GetLikenessValue(
-						vulnStore[i].Vulnerability.Recommendations[0],
-						vulnStore[j].Vulnerability.Recommendations[0])
-
-					// If Summary similarity is greater than 0.8 the vulnerabilties are grouped
-					// If the sum of Summary similarity and Recommendation similarity is greater than 1.4 then the vulnerabilties are grouped
-					// Vulnerabilities which have Recommendation too short will not be grouped
-					if (summarySimilarity > 0.8 || summarySimilarity+recommendationsSimilarity >= 1.4) &&
-						len(vulnStore[i].Vulnerability.Recommendations[0]) > 6 &&
-						len(vulnStore[j].Vulnerability.Recommendations[0]) > 6 {
-						// append vulnStore[j] to the current group
-						vGroup.Vulnerability.Vulnerabilities = append(vGroup.Vulnerability.Vulnerabilities, vulnStore[j].Vulnerability)
-
-						// empty vulnStore[j]
-						vulnStore[j] = nil
-					}
-				}
-			}
-		}
-
-		// if there are grouped vulnerabilities,
-		// rewrite the Summary
-		// rewirte the Description
-		// and set it's vulnerabilties to be the same as the group
-		if len(vGroup.Vulnerability.Vulnerabilities) > 1 {
-			// Grab the "max" recommendation
-			// This way, if we have multiples entries like
-			// ---
-			// PHP 5.3.x < 5.3.29 Multiple Vulnerabilities
-			// PHP 5.3.x < 5.3.27 Multiple Vulnerabilities
-			// PHP 5.3.x < 5.3.26 Multiple Vulnerabilities
-			// ---
-			// we can point the user to update to the last PHP version
-			maxReco := ""
-			for _, vuln := range vGroup.Vulnerability.Vulnerabilities {
-				for _, recom := range vuln.Recommendations {
-					if recom > maxReco {
-						maxReco = recom
-					}
-				}
-			}
-
-			vulnStore[i].Vulnerability.Summary = vulnStore[i].Vulnerability.Summary + " And Similar"
-			// Show the recommendation instead the description (because it is a group)
-			vulnStore[i].Vulnerability.Description = maxReco
-			vulnStore[i].Vulnerability.Vulnerabilities = vGroup.Vulnerability.Vulnerabilities
-		}
-
-	}
-
-	// replace the original array of Vulnerabilities by the new groupe one
-	reportData.Vulnerabilities = []vulcan.Vulnerability{}
-	for i := 0; i < len(vulnStore); i++ {
-		if vulnStore[i] == nil {
-			continue
-		}
-		reportData.Vulnerabilities = append(reportData.Vulnerabilities, *vulnStore[i])
-	}
-	return reportData
 }

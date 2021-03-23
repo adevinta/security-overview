@@ -3,7 +3,6 @@ module github.com/adevinta/security-overview
 go 1.13
 
 require (
-	github.com/AllenDang/simhash v0.0.0-20130730023417-eb7ce13bfe06
 	github.com/BurntSushi/toml v0.3.1
 	github.com/adevinta/vulcan-groupie v0.0.0-20200831130152-6edaf8517386
 	github.com/adevinta/vulcan-report v0.0.0-20190503133936-d8a2d4cb18ff
