@@ -19,14 +19,13 @@ func GetDate(baseEndpoint, scanID string) (string, error) {
 	if err != nil {
 		return "", errors.New("Error calling endpoint: " + url + "\n" + err.Error())
 	}
-
 	scan := &Scan{}
 	err = json.Unmarshal(body, scan)
 	if err != nil {
 		return "", errors.New("Error calling endpoint: " + url + "\n" + err.Error())
 	}
 
-	date := scan.Scan.CreatedAt.Format("2006-01-02")
+	date := scan.StartTime.Format("2006-01-02")
 	return date, nil
 }
 
