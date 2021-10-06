@@ -6,14 +6,8 @@ import (
 
 //Scan represents the response from /scan/{id}
 type Scan struct {
-	Scan ScanObject `json:"scan"`
-}
-
-//ScanObject is the actual content of a Scan
-type ScanObject struct {
 	ID        string    `json:"id"`
-	Size      int       `json:"size"`
-	CreatedAt time.Time `json:"created_at"`
+	StartTime time.Time `json:"start_time"`
 }
 
 //Checks represents the response from /scan/{id}/checks
