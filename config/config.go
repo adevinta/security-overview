@@ -47,7 +47,6 @@ type proxy struct {
 }
 
 type generalConfig struct {
-	ResourcesPath     string `toml:"resources_path"`
 	LocalTempDir      string `toml:"local_temp_dir"`
 	CompanyName       string `toml:"company_name"`
 	SupportEmail      string `toml:"support_email"`
