@@ -9,6 +9,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/danfaizer/go-chart"
 
+	"github.com/adevinta/security-overview/resources"
 	"github.com/adevinta/security-overview/utils"
 	"github.com/adevinta/security-overview/vulcan"
 )
@@ -19,8 +20,7 @@ const (
 
 //Overview ...
 type Overview struct {
-	ResourcesPath string
-	LocalTempDir  string
+	LocalTempDir string
 
 	Bucket         string
 	Folder         string
@@ -86,7 +86,7 @@ func (o *Overview) Generate() (string, error) {
 
 	reportTemplate := template.New("report").Funcs(template.FuncMap{"now": time.Now})
 
-	reportHTML, err := reportTemplate.ParseFiles(filepath.Join(o.ResourcesPath, templateFile))
+	reportHTML, err := reportTemplate.ParseFS(resources.Files, templateFile)
 	if err != nil {
 		return "", err
 	}

@@ -17,7 +17,6 @@ import (
 
 	"github.com/adevinta/security-overview/config"
 	"github.com/adevinta/security-overview/report"
-	"github.com/adevinta/security-overview/resources"
 	"github.com/adevinta/security-overview/vulcan"
 )
 
@@ -37,8 +36,6 @@ type DetailedReport struct {
 
 // NewDetailedReport  initializes and returns a new DetailedReport
 func NewDetailedReport(configFile, teamName, scanID, teamID string) (*DetailedReport, error) {
-	resources.Include()
-
 	conf, err := config.ReadConfig(configFile)
 	if err != nil {
 		return nil, err
@@ -106,7 +103,7 @@ func (d *DetailedReport) GenerateLocalFiles() error {
 	//                         '--<Most Vulnerable Assets>.png
 	//                         '
 	//                         '--<Impact Distribution>.png
-	d.Email, err = report.GenerateOverview(d.conf, d.awsConfig, d.conf.General.ResourcesPath, d.folder, reportData, d.teamName, d.teamID, d.scanID)
+	d.Email, err = report.GenerateOverview(d.conf, d.awsConfig, d.folder, reportData, d.teamName, d.teamID, d.scanID)
 	if err != nil {
 		return err
 	}
@@ -126,7 +123,7 @@ func (d *DetailedReport) GenerateLocalFiles() error {
 	//
 	// The result will be the the URL in which the Full Report will be available.
 	// The Overview HTML will be generated pointing to this link.
-	d.URL, err = report.GenerateFullReport(d.conf, d.awsConfig, d.conf.General.ResourcesPath, d.folder, reportData, d.teamName)
+	d.URL, err = report.GenerateFullReport(d.conf, d.awsConfig, d.folder, reportData, d.teamName)
 	if err != nil {
 		return err
 	}
@@ -180,7 +177,7 @@ func (d *DetailedReport) GenerateLocalFilesFromCheck(path string) error {
 	//
 	// The result will be the the URL in which the Full Report will be available.
 	// The Overview HTML will be generated pointing to this link.
-	d.URL, err = report.GenerateFullReport(d.conf, d.awsConfig, d.conf.General.ResourcesPath, d.folder, reportData, d.teamName)
+	d.URL, err = report.GenerateFullReport(d.conf, d.awsConfig, d.folder, reportData, d.teamName)
 	if err != nil {
 		return err
 	}

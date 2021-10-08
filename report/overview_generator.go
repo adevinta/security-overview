@@ -15,7 +15,7 @@ import (
 
 // GenerateOverview generates content of the overview report suitable to be send as email.
 // Returns the url or the file path, depending on configuration, where the report generated is stored.
-func GenerateOverview(conf config.Config, awsConfig *aws.Config, resourcesPath, folder string, reportData *vulcan.ReportData, teamName, teamID, scanID string) (string, error) {
+func GenerateOverview(conf config.Config, awsConfig *aws.Config, folder string, reportData *vulcan.ReportData, teamName, teamID, scanID string) (string, error) {
 	// assemble the array of vulnerabilities per checktype
 	vulnerabilityPerImpact := []chart.Value{}
 	vulnerabilitiesCount := 0
@@ -99,7 +99,6 @@ func GenerateOverview(conf config.Config, awsConfig *aws.Config, resourcesPath, 
 		RedirectURLURL.RawQuery = RedirectURLURL.RawQuery + url.QueryEscape(fullReportURL.String())
 	}
 	overview := Overview{
-		ResourcesPath:        resourcesPath,
 		LocalTempDir:         conf.General.LocalTempDir,
 		CompanyName:          conf.General.CompanyName,
 		SupportEmail:         conf.General.SupportEmail,

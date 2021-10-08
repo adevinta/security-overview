@@ -114,7 +114,6 @@ func generateFromFile(path string, config string) error {
 }
 
 func regenerateReport() error {
-	resourcesPath := *resources
 	jsonFilePath, err := filepath.Abs(*regen)
 	if err != nil {
 		return err
@@ -137,7 +136,6 @@ func regenerateReport() error {
 	if err != nil {
 		return err
 	}
-	r.ResourcesPath = resourcesPath
 	r.PublicResourcesPath = *presources
 	r.ManageAssetsURL = *assetsURL
 	r.DetailsURL = *detailsURL

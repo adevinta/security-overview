@@ -16,6 +16,7 @@ import (
 	"github.com/microcosm-cc/bluemonday"
 	blackfriday "github.com/russross/blackfriday/v2"
 
+	"github.com/adevinta/security-overview/resources"
 	"github.com/adevinta/security-overview/utils"
 	"github.com/adevinta/security-overview/vulcan"
 	vulcanreport "github.com/adevinta/vulcan-report"
@@ -50,7 +51,6 @@ type FullReport struct {
 	Jira                string      `json:"-" xml:"-"`
 	ContactChannel      string      `json:"-" xml:"-"`
 	ContactEmail        string      `json:"-" xml:"-"`
-	ResourcesPath       string      `json:"-" xml:"-"`
 	LocalTempDir        string      `json:"-" xml:"-"`
 	PublicResourcesPath string      `json:"-" xml:"-"`
 	Bucket              string      `json:"-" xml:"-"`
@@ -169,9 +169,8 @@ var templateFuncMap = template.FuncMap{
 func (fr *FullReport) Generate() (string, error) {
 	generateFuncs := templateFuncMap
 	generateFuncs["upload"] = func(path string) string {
-		path = filepath.Join(fr.ResourcesPath, path)
 		ext := filepath.Ext(path)
-		body, errUploadFile := ioutil.ReadFile(path)
+		body, errUploadFile := resources.Files.ReadFile(path)
 		if errUploadFile != nil {
 			log.Println(errUploadFile)
 			return ""
@@ -199,7 +198,7 @@ func (fr *FullReport) Generate() (string, error) {
 
 	log.Println("full report JSON: ", fr.JSONExportURL)
 
-	reportHTML, err := reportTemplate.ParseFiles(filepath.Join(fr.ResourcesPath, templateFileFullReport))
+	reportHTML, err := reportTemplate.ParseFS(resources.Files, templateFileFullReport)
 	if err != nil {
 		return "", err
 	}
@@ -222,12 +221,11 @@ func (fr *FullReport) Regenerate() (string, error) {
 
 	regenerateFuncs := templateFuncMap
 	regenerateFuncs["upload"] = func(relativePath string) string {
-		localpath := filepath.Join(fr.ResourcesPath, relativePath)
-		content, err := ioutil.ReadFile(localpath)
+		content, err := resources.Files.ReadFile(relativePath)
 		if err != nil {
 			panic(err)
 		}
-		filename := filepath.Base(localpath)
+		filename := filepath.Base(relativePath)
 		destPath := filepath.Join(fr.Folder, filename)
 		err = ioutil.WriteFile(destPath, content, os.ModePerm)
 		if err != nil {
@@ -237,8 +235,7 @@ func (fr *FullReport) Regenerate() (string, error) {
 	}
 
 	reportTemplate := template.New("full-report").Funcs(regenerateFuncs)
-
-	reportHTML, err := reportTemplate.ParseFiles(filepath.Join(fr.ResourcesPath, templateFileFullReport))
+	reportHTML, err := reportTemplate.ParseFS(resources.Files, templateFileFullReport)
 	if err != nil {
 		return "", err
 	}

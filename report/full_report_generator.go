@@ -26,7 +26,7 @@ func maxScore(vulns []vulcan.Vulnerability) float32 {
 
 // GenerateFullReport generates the html report suitable to be published as a static web page.
 // Returns the url or the file path, depending on configuration, where the report generated is stored.
-func GenerateFullReport(conf config.Config, awsConfig *aws.Config, resourcesPath, folder string, reportData *vulcan.ReportData, teamName string) (string, error) {
+func GenerateFullReport(conf config.Config, awsConfig *aws.Config, folder string, reportData *vulcan.ReportData, teamName string) (string, error) {
 	mapVulnerabilitiesPerAsset := make(map[string][]vulcan.Vulnerability)
 	aggregatedVulnerabilities := []report.Vulnerability{}
 
@@ -83,7 +83,6 @@ func GenerateFullReport(conf config.Config, awsConfig *aws.Config, resourcesPath
 		return maxScore(assetVulnsSlice[i].Vulns) > maxScore(assetVulnsSlice[j].Vulns)
 	})
 	fullReport := FullReport{
-		ResourcesPath:   resourcesPath,
 		LocalTempDir:    conf.General.LocalTempDir,
 		HomeURL:         conf.Endpoints.VulcanUI,
 		ManageAssetsURL: conf.Endpoints.VulcanUI + ManageAssetsPath,
