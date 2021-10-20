@@ -10,7 +10,7 @@ require (
 	github.com/blend/go-sdk v1.20210918.2 // indirect
 	github.com/danfaizer/go-chart v2.0.2-0.20190111100232-3508c5c28f50+incompatible
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
-	github.com/microcosm-cc/bluemonday v1.0.15
+	github.com/microcosm-cc/bluemonday v1.0.16
 	github.com/russross/blackfriday/v2 v2.1.0
 	github.com/satori/go.uuid v1.2.1-0.20181028125025-b2ce2384e17b
 	golang.org/x/image v0.0.0-20210628002857-a66eb6448b8d // indirect
