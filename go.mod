@@ -5,7 +5,7 @@ go 1.18
 require (
 	github.com/BurntSushi/toml v0.4.1
 	github.com/adevinta/vulcan-groupie v1.0.0-rc1
-	github.com/adevinta/vulcan-report v1.0.0-rc1
+	github.com/adevinta/vulcan-report v1.0.0
 	github.com/aws/aws-sdk-go v1.42.34
 	github.com/danfaizer/go-chart v2.0.2-0.20190111100232-3508c5c28f50+incompatible
 	github.com/microcosm-cc/bluemonday v1.0.16
