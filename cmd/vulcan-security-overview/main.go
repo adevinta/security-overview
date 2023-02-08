@@ -47,7 +47,10 @@ func main() {
 		if *configFile == "" {
 			flag.Usage()
 		}
-		generateFromFile(*check, *configFile)
+		err := generateFromFile(*check, *configFile)
+		if err != nil {
+			panic(err)
+		}
 		return
 	}
 	if !checkParams() {

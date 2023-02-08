@@ -15,6 +15,9 @@ func GetReport(baseEndpoint, rurl string) (*report.Report, error) {
 		return nil, err
 	}
 	reportURL, err := url.Parse(rurl)
+	if err != nil {
+		return nil, err
+	}
 	u.Path = reportURL.Path
 	resp, err := http.Get(u.String())
 	if err != nil {

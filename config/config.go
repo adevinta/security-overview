@@ -15,7 +15,7 @@ type Config struct {
 	S3          s3Config          `toml:"s3"`
 	Persistence persistenceConfig `toml:"persistence"`
 	Results     resultsConfig     `toml:"results"`
-	Proxy       resultsConfig     `toml:"proxy"`
+	Proxy       proxy             `toml:"proxy"`
 	General     generalConfig     `toml:"general"`
 	Endpoints   endpointsConfig   `toml:"endpoints"`
 }

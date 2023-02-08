@@ -82,7 +82,6 @@ type FullReport struct {
 var templateFuncMap = template.FuncMap{
 	"upload": func(path string) string {
 		panic(fmt.Errorf("upload template func not implemented"))
-		return ""
 	},
 	"severityToStr": func(severity vulcanreport.SeverityRank) string {
 		switch severity {

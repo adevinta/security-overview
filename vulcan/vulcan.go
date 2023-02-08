@@ -23,7 +23,7 @@ func (rp *ReportData) worker(done <-chan struct{}, conf config.Config) {
 
 	for !exit {
 		select {
-		case check, _ := <-rp.chanChecks:
+		case check := <-rp.chanChecks:
 			report, err := results.GetReport(conf.Results.Endpoint, check.Report)
 			if err != nil {
 				log.Printf("ERROR getting results for check-id: %s. Error detail:%v.\n The security overview will not include results of these checks.", check, err)
@@ -204,7 +204,7 @@ func (rp *ReportData) setAssets() {
 		assets = append(assets, asset)
 	}
 
-	sort.Sort(sort.StringSlice(assets))
+	sort.Strings(sort.StringSlice(assets))
 
 	rp.Assets = assets
 }
@@ -221,7 +221,7 @@ func (rp *ReportData) setChecktypes() {
 	for checktype := range checktypeMap {
 		checktypes = append(checktypes, checktype)
 	}
-	sort.Sort(sort.StringSlice(checktypes))
+	sort.Strings(sort.StringSlice(checktypes))
 
 	rp.CheckTypes = checktypes
 }
