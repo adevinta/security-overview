@@ -9,7 +9,10 @@ security-overview.git
 persistence/cli/cli
 cmd/v2/output
 cmd/vulcan-security-overview/output
+_build/files/opt/vulcan-reports-generator/generators/scan/output
 cmd/vulcan-security-overview/*.json
 vendor/
 .DS_Store
 /output/
+run.toml
+.vscode
