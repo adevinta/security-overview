@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -118,7 +117,7 @@ func regenerateReport() error {
 	if err != nil {
 		return err
 	}
-	data, err := ioutil.ReadFile(jsonFilePath)
+	data, err := os.ReadFile(jsonFilePath)
 	if err != nil {
 		return err
 	}

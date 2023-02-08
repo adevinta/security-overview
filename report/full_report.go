@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
-	"io/ioutil"
 	"log"
 	"net/url"
 	"os"
@@ -227,7 +226,7 @@ func (fr *FullReport) Regenerate() (string, error) {
 		}
 		filename := filepath.Base(relativePath)
 		destPath := filepath.Join(fr.Folder, filename)
-		err = ioutil.WriteFile(destPath, content, os.ModePerm)
+		err = os.WriteFile(destPath, content, os.ModePerm)
 		if err != nil {
 			panic(err)
 		}
@@ -248,7 +247,7 @@ func (fr *FullReport) Regenerate() (string, error) {
 	}
 	content := buf.Bytes()
 	reportPath := filepath.Join(fr.Folder, fmt.Sprintf("%s%s", fr.Filename, fr.Extension))
-	err = ioutil.WriteFile(reportPath, content, os.ModePerm)
+	err = os.WriteFile(reportPath, content, os.ModePerm)
 	if err != nil {
 		return "", err
 	}

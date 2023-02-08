@@ -5,7 +5,6 @@ import (
 	"crypto/sha256"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"mime"
 	"os"
@@ -74,7 +73,7 @@ func (d *DetailedReport) GenerateLocalFiles() error {
 		return err
 	}
 
-	ioutil.WriteFile(d.teamName+".json", buf, 0600)
+	os.WriteFile(d.teamName+".json", buf, 0600)
 
 	// Assemble the folder name. The format is:	hex(sha256(teamName))/YYYY-MM-DD
 	// The idea behind this is that if we use teams names as folder names, then
@@ -147,7 +146,7 @@ func (d *DetailedReport) GenerateLocalFilesFromCheck(path string) error {
 		return err
 	}
 
-	ioutil.WriteFile(d.teamName+".json", buf, 0600)
+	os.WriteFile(d.teamName+".json", buf, 0600)
 
 	// Assemble the folder name. The format is:	hex(sha256(teamName))/YYYY-MM-DD
 	// The idea behind this is that if we use teams names as folder names, then
@@ -245,7 +244,7 @@ func (d *DetailedReport) uploadFile(bucket, key, localPath, filename string) err
 	svc := s3.New(session.New(d.awsConfig))
 	localFilename := filepath.Join(localPath, filename)
 	contentType := mime.TypeByExtension(filepath.Ext(localFilename))
-	body, err := ioutil.ReadFile(localFilename)
+	body, err := os.ReadFile(localFilename)
 	if err != nil {
 		return err
 	}

@@ -3,11 +3,11 @@ package persistence
 import (
 	"encoding/json"
 	"errors"
-	"io/ioutil"
+	"io"
 	"net/http"
 )
 
-//GetDate retrieves the date for a scan.
+// GetDate retrieves the date for a scan.
 func GetDate(baseEndpoint, scanID string) (string, error) {
 	url := baseEndpoint + "/v1/scans/" + scanID
 	resp, err := http.Get(url)
@@ -15,7 +15,7 @@ func GetDate(baseEndpoint, scanID string) (string, error) {
 		return "", errors.New("Error calling endpoint: " + url + "\n" + err.Error())
 	}
 	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return "", errors.New("Error calling endpoint: " + url + "\n" + err.Error())
 	}
@@ -29,7 +29,7 @@ func GetDate(baseEndpoint, scanID string) (string, error) {
 	return date, nil
 }
 
-//GetChecks retrieves all checks for a scan.
+// GetChecks retrieves all checks for a scan.
 func GetChecks(baseEndpoint, scanID string) ([]Check, error) {
 	url := baseEndpoint + "/v1/scans/" + scanID + "/checks?status=FINISHED"
 	resp, err := http.Get(url)
@@ -38,7 +38,7 @@ func GetChecks(baseEndpoint, scanID string) ([]Check, error) {
 	}
 	defer resp.Body.Close()
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, errors.New("Error calling endpoint: " + url + "\n" + err.Error())
 	}

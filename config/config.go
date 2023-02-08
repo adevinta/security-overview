@@ -1,7 +1,7 @@
 package config
 
 import (
-	"io/ioutil"
+	"os"
 
 	"github.com/BurntSushi/toml"
 )
@@ -64,7 +64,7 @@ type endpointsConfig struct {
 }
 
 func ReadConfig(configFile string) (Config, error) {
-	configData, err := ioutil.ReadFile(configFile)
+	configData, err := os.ReadFile(configFile)
 	if err != nil {
 		return Config{}, err
 	}

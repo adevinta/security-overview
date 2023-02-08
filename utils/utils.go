@@ -2,12 +2,12 @@ package utils
 
 import (
 	"fmt"
-	uuid "github.com/satori/go.uuid"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
+
+	uuid "github.com/satori/go.uuid"
 )
 
 const ExtensionPNG = ".png"
@@ -32,7 +32,7 @@ func GenerateLocalFile(body []byte, proxy, bucket, folder, localTempDir, filenam
 		filename = u.String()
 	}
 	path := filepath.Join(localTempDir, filename+extension)
-	err := ioutil.WriteFile(path, body, 0600)
+	err := os.WriteFile(path, body, 0600)
 	if err != nil {
 		return "", err
 	}
