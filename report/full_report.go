@@ -182,17 +182,24 @@ func (fr *FullReport) Generate() (string, error) {
 	}
 
 	reportTemplate := template.New("full-report").Funcs(generateFuncs)
-	fullReportJSON, err := json.MarshalIndent(fr, "", "  ")
+	fullReportJSONURL, fullReportJSONPath, err := GenerateLocalFilePathAndRemoteURL(fr.Proxy, fr.Bucket, fr.Folder, filepath.Join(fr.LocalTempDir, fr.ScanID, fr.Bucket, fr.Folder), fr.Filename, ".json")
 	if err != nil {
 		return "", err
 	}
 
-	reportJSONURL, err := utils.GenerateLocalFile(fullReportJSON, fr.Proxy, fr.Bucket, fr.Folder, filepath.Join(fr.LocalTempDir, fr.ScanID, fr.Bucket, fr.Folder), fr.Filename, ".json")
+	file, err := os.Create(fullReportJSONPath + ".json")
+	if err != nil {
+		return "", err
+	}
+	defer file.Close()
+
+	encoder := json.NewEncoder(file)
+	err = encoder.Encode(*fr)
 	if err != nil {
 		return "", err
 	}
 
-	fr.JSONExportURL = reportJSONURL
+	fr.JSONExportURL = fullReportJSONURL
 
 	log.Println("full report JSON: ", fr.JSONExportURL)
 
@@ -201,14 +208,23 @@ func (fr *FullReport) Generate() (string, error) {
 		return "", err
 	}
 
-	var output []byte
-	buf := bytes.NewBuffer(output)
-	err = reportHTML.ExecuteTemplate(buf, templateFileFullReport, fr)
+	reportHTMLURL, reportHTMLPath, err := GenerateLocalFilePathAndRemoteURL(fr.Proxy, fr.Bucket, fr.Folder, filepath.Join(fr.LocalTempDir, fr.ScanID, fr.Bucket, fr.Folder), fr.Filename, fr.Extension)
 	if err != nil {
 		return "", err
 	}
-	fmt.Printf("filename %s\n", fr.Filename)
-	return utils.GenerateLocalFile(buf.Bytes(), fr.Proxy, fr.Bucket, fr.Folder, filepath.Join(fr.LocalTempDir, fr.ScanID, fr.Bucket, fr.Folder), fr.Filename, fr.Extension)
+
+	file, err = os.Create(reportHTMLPath)
+	if err != nil {
+		return "", err
+	}
+	defer file.Close()
+
+	err = reportHTML.ExecuteTemplate(file, templateFileFullReport, fr)
+	if err != nil {
+		return "", err
+	}
+
+	return reportHTMLURL, nil
 }
 
 func (fr *FullReport) Regenerate() (string, error) {

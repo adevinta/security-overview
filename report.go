@@ -68,12 +68,14 @@ func (d *DetailedReport) GenerateLocalFiles() error {
 		return err
 	}
 
-	buf, err := json.Marshal(reportData)
+	file, err := os.Create(d.teamName + ".json")
 	if err != nil {
 		return err
 	}
+	defer file.Close()
 
-	err = os.WriteFile(d.teamName+".json", buf, 0600)
+	encoder := json.NewEncoder(file)
+	err = encoder.Encode(reportData)
 	if err != nil {
 		return err
 	}
@@ -144,12 +146,14 @@ func (d *DetailedReport) GenerateLocalFilesFromCheck(path string) error {
 		return err
 	}
 
-	buf, err := json.Marshal(reportData)
+	file, err := os.Create(d.teamName + ".json")
 	if err != nil {
 		return err
 	}
+	defer file.Close()
 
-	err = os.WriteFile(d.teamName+".json", buf, 0600)
+	encoder := json.NewEncoder(file)
+	err = encoder.Encode(reportData)
 	if err != nil {
 		return err
 	}

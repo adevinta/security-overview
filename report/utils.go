@@ -4,9 +4,13 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
+	"fmt"
+	"path/filepath"
+	"strings"
 
 	"github.com/danfaizer/go-chart"
 	"github.com/danfaizer/go-chart/drawing"
+	uuid "github.com/satori/go.uuid"
 )
 
 // Material design color palette, according to:
@@ -116,4 +120,29 @@ func RiskToActionString(risk int) string {
 	default:
 		return "UNKNOWN RISK"
 	}
+}
+
+func GenerateLocalFilePathAndRemoteURL(proxy, bucket, folder, localTempDir, filename, extension string) (string, string, error) {
+	if filename == "" {
+		u, err := uuid.NewV4()
+		if err != nil {
+			return "", "", err
+		}
+
+		filename = u.String()
+	}
+	path := filepath.Join(localTempDir, filename+extension)
+
+	if proxy == "" {
+		return filepath.Join(localTempDir, filename+extension), path, nil
+	}
+
+	if bucket == "" {
+		return filename + extension, path, nil
+	}
+
+	if strings.Contains(bucket, "public") {
+		return fmt.Sprintf("https://%s.s3.amazonaws.com/%s", bucket, filepath.Join(folder, filename+extension)), path, nil
+	}
+	return fmt.Sprintf("%s/%s", proxy, filepath.Join(folder, filename+extension)), path, nil
 }
