@@ -187,7 +187,7 @@ func (fr *FullReport) Generate() (string, error) {
 		return "", err
 	}
 
-	file, err := os.Create(fullReportJSONPath + ".json")
+	file, err := os.Create(fullReportJSONPath)
 	if err != nil {
 		return "", err
 	}
