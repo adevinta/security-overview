@@ -1,7 +1,7 @@
 package config
 
 import (
-	"io/ioutil"
+	"os"
 
 	"github.com/BurntSushi/toml"
 )
@@ -15,7 +15,7 @@ type Config struct {
 	S3          s3Config          `toml:"s3"`
 	Persistence persistenceConfig `toml:"persistence"`
 	Results     resultsConfig     `toml:"results"`
-	Proxy       resultsConfig     `toml:"proxy"`
+	Proxy       proxy             `toml:"proxy"`
 	General     generalConfig     `toml:"general"`
 	Endpoints   endpointsConfig   `toml:"endpoints"`
 }
@@ -64,7 +64,7 @@ type endpointsConfig struct {
 }
 
 func ReadConfig(configFile string) (Config, error) {
-	configData, err := ioutil.ReadFile(configFile)
+	configData, err := os.ReadFile(configFile)
 	if err != nil {
 		return Config{}, err
 	}

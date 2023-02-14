@@ -1,20 +1,23 @@
 package results
 
 import (
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 
 	report "github.com/adevinta/vulcan-report"
 )
 
-//GetReport retrieves a report stored on vulcan results
+// GetReport retrieves a report stored on vulcan results
 func GetReport(baseEndpoint, rurl string) (*report.Report, error) {
 	u, err := url.Parse(baseEndpoint)
 	if err != nil {
 		return nil, err
 	}
 	reportURL, err := url.Parse(rurl)
+	if err != nil {
+		return nil, err
+	}
 	u.Path = reportURL.Path
 	resp, err := http.Get(u.String())
 	if err != nil {
@@ -22,7 +25,7 @@ func GetReport(baseEndpoint, rurl string) (*report.Report, error) {
 	}
 	defer resp.Body.Close()
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}

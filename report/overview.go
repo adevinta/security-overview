@@ -1,7 +1,7 @@
 package report
 
 import (
-	"bytes"
+	"os"
 	"path/filepath"
 	"text/template"
 	"time"
@@ -10,7 +10,6 @@ import (
 	"github.com/danfaizer/go-chart"
 
 	"github.com/adevinta/security-overview/resources"
-	"github.com/adevinta/security-overview/utils"
 	"github.com/adevinta/security-overview/vulcan"
 )
 
@@ -18,7 +17,7 @@ const (
 	templateFile = "overview.html"
 )
 
-//Overview ...
+// Overview ...
 type Overview struct {
 	LocalTempDir string
 
@@ -91,12 +90,21 @@ func (o *Overview) Generate() (string, error) {
 		return "", err
 	}
 
-	var output []byte
-	buf := bytes.NewBuffer(output)
-	err = reportHTML.ExecuteTemplate(buf, templateFile, o)
+	overviewHTMLURL, overviewHTMLPath, err := GenerateLocalFilePathAndRemoteURL("", o.Bucket, o.Folder, filepath.Join(o.LocalTempDir, o.ScanID), o.Filename, o.Extension)
 	if err != nil {
 		return "", err
 	}
 
-	return utils.GenerateLocalFile(buf.Bytes(), "", o.Bucket, o.Folder, filepath.Join(o.LocalTempDir, o.ScanID), o.Filename, o.Extension)
+	file, err := os.Create(overviewHTMLPath)
+	if err != nil {
+		return "", err
+	}
+	defer file.Close()
+
+	err = reportHTML.ExecuteTemplate(file, templateFile, o)
+	if err != nil {
+		return "", err
+	}
+
+	return overviewHTMLURL, nil
 }

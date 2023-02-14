@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -48,7 +47,10 @@ func main() {
 		if *configFile == "" {
 			flag.Usage()
 		}
-		generateFromFile(*check, *configFile)
+		err := generateFromFile(*check, *configFile)
+		if err != nil {
+			panic(err)
+		}
 		return
 	}
 	if !checkParams() {
@@ -118,7 +120,7 @@ func regenerateReport() error {
 	if err != nil {
 		return err
 	}
-	data, err := ioutil.ReadFile(jsonFilePath)
+	data, err := os.ReadFile(jsonFilePath)
 	if err != nil {
 		return err
 	}

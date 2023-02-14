@@ -5,7 +5,6 @@ import (
 	"crypto/sha256"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"mime"
 	"os"
@@ -69,12 +68,17 @@ func (d *DetailedReport) GenerateLocalFiles() error {
 		return err
 	}
 
-	buf, err := json.Marshal(reportData)
+	file, err := os.Create(d.teamName + ".json")
 	if err != nil {
 		return err
 	}
+	defer file.Close()
 
-	ioutil.WriteFile(d.teamName+".json", buf, 0600)
+	encoder := json.NewEncoder(file)
+	err = encoder.Encode(reportData)
+	if err != nil {
+		return err
+	}
 
 	// Assemble the folder name. The format is:	hex(sha256(teamName))/YYYY-MM-DD
 	// The idea behind this is that if we use teams names as folder names, then
@@ -142,12 +146,17 @@ func (d *DetailedReport) GenerateLocalFilesFromCheck(path string) error {
 		return err
 	}
 
-	buf, err := json.Marshal(reportData)
+	file, err := os.Create(d.teamName + ".json")
 	if err != nil {
 		return err
 	}
+	defer file.Close()
 
-	ioutil.WriteFile(d.teamName+".json", buf, 0600)
+	encoder := json.NewEncoder(file)
+	err = encoder.Encode(reportData)
+	if err != nil {
+		return err
+	}
 
 	// Assemble the folder name. The format is:	hex(sha256(teamName))/YYYY-MM-DD
 	// The idea behind this is that if we use teams names as folder names, then
@@ -242,10 +251,14 @@ func (d *DetailedReport) uploadBucket(bucket string) error {
 }
 
 func (d *DetailedReport) uploadFile(bucket, key, localPath, filename string) error {
-	svc := s3.New(session.New(d.awsConfig))
+	sess, err := session.NewSession(d.awsConfig)
+	if err != nil {
+		return err
+	}
+	svc := s3.New(sess)
 	localFilename := filepath.Join(localPath, filename)
 	contentType := mime.TypeByExtension(filepath.Ext(localFilename))
-	body, err := ioutil.ReadFile(localFilename)
+	body, err := os.ReadFile(localFilename)
 	if err != nil {
 		return err
 	}

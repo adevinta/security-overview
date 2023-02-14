@@ -3,8 +3,8 @@ package vulcan
 import (
 	"context"
 	"encoding/json"
-	"io/ioutil"
 	"log"
+	"os"
 	"sort"
 	"time"
 
@@ -23,7 +23,7 @@ func (rp *ReportData) worker(done <-chan struct{}, conf config.Config) {
 
 	for !exit {
 		select {
-		case check, _ := <-rp.chanChecks:
+		case check := <-rp.chanChecks:
 			report, err := results.GetReport(conf.Results.Endpoint, check.Report)
 			if err != nil {
 				log.Printf("ERROR getting results for check-id: %s. Error detail:%v.\n The security overview will not include results of these checks.", check, err)
@@ -48,8 +48,8 @@ func (rp *ReportData) worker(done <-chan struct{}, conf config.Config) {
 	}
 }
 
-//GetReportData extracts information about the given scan from
-//both vulcan-persistence API and vulcan-results API
+// GetReportData extracts information about the given scan from
+// both vulcan-persistence API and vulcan-results API
 func GetReportData(conf config.Config, scanID string) (*ReportData, error) {
 	m := db.NewMemDB()
 	g := groupie.New(m)
@@ -129,7 +129,7 @@ func GetReportDataFromFile(conf config.Config, scanID, path string) (*ReportData
 	log.Printf("Getting reports from results json file...")
 	rp.Reports = []vulcanreport.Report{}
 
-	content, err := ioutil.ReadFile(path)
+	content, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
@@ -165,7 +165,7 @@ func GetReportDataFromFile(conf config.Config, scanID, path string) (*ReportData
 	return rp, nil
 }
 
-//Risk is defined as the maximum severity found among all vulnerabilities
+// Risk is defined as the maximum severity found among all vulnerabilities
 func (rp *ReportData) setRisk() {
 	severityLevel := vulcanreport.SeverityNone
 loop:
@@ -186,12 +186,12 @@ loop:
 	rp.Risk = severityLevel
 }
 
-//An action is required if the risk is high or critical
+// An action is required if the risk is high or critical
 func (rp *ReportData) setActionRequired() {
 	rp.ActionRequired = rp.Risk >= vulcanreport.SeverityHigh
 }
 
-//Find all scanned assets in this report
+// Find all scanned assets in this report
 func (rp *ReportData) setAssets() {
 	assets := []string{}
 	assetMap := make(map[string]bool)
@@ -204,12 +204,12 @@ func (rp *ReportData) setAssets() {
 		assets = append(assets, asset)
 	}
 
-	sort.Sort(sort.StringSlice(assets))
+	sort.Strings(sort.StringSlice(assets))
 
 	rp.Assets = assets
 }
 
-//Find all checktypes in this report
+// Find all checktypes in this report
 func (rp *ReportData) setChecktypes() {
 	checktypes := []string{}
 	checktypeMap := make(map[string]bool)
@@ -221,12 +221,12 @@ func (rp *ReportData) setChecktypes() {
 	for checktype := range checktypeMap {
 		checktypes = append(checktypes, checktype)
 	}
-	sort.Sort(sort.StringSlice(checktypes))
+	sort.Strings(sort.StringSlice(checktypes))
 
 	rp.CheckTypes = checktypes
 }
 
-//populates an array containing the number of vulnerabilities per checktype
+// populates an array containing the number of vulnerabilities per checktype
 func (rp *ReportData) setVulnerabilitiesPerImpact() {
 	// in the cases where a report does not contains any vulnerabilities,
 	// the pie chart library will complain about not being able to Generate
@@ -257,7 +257,7 @@ func (rp *ReportData) setVulnerabilitiesPerImpact() {
 	rp.VulnerabilitiesPerImpact = result
 }
 
-//populates an array containing the assets ordered by number of vulnerabilities
+// populates an array containing the assets ordered by number of vulnerabilities
 func (rp *ReportData) setVulnerabilitiesPerAssets() {
 	var assetVulnerabilitiesMap = make(map[string]int)
 
@@ -293,7 +293,7 @@ func (rp *ReportData) setVulnerabilitiesPerAssets() {
 	rp.VulnerabilitiesPerAsset = result
 }
 
-//find the number of vulnerables assets
+// find the number of vulnerables assets
 func (rp *ReportData) setNumberOfVulnerableAssets() {
 	var vulnerableAssets = make(map[string]bool)
 
@@ -308,7 +308,7 @@ func (rp *ReportData) setNumberOfVulnerableAssets() {
 	rp.NumberOfVulnerableAssets = len(vulnerableAssets)
 }
 
-//find all vulnerabilties on a report
+// find all vulnerabilties on a report
 func (rp *ReportData) setTopVulnerabilities() {
 	vulnerabilitiesCountMap := make(map[string]map[string]VulnerabilityCount)
 	result := []VulnerabilityCount{}
@@ -371,7 +371,7 @@ func (rp *ReportData) setTopVulnerabilities() {
 	}
 }
 
-//find all vulnerabilties on a report
+// find all vulnerabilties on a report
 func (rp *ReportData) setAllVulnerabilities() {
 	result := []Vulnerability{}
 
