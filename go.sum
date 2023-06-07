@@ -1,5 +1,5 @@
-github.com/BurntSushi/toml v1.2.1 h1:9F2/+DoOYIOksmaJFPw1tGFy1eDnIJXg+UHjuD8lTak=
-github.com/BurntSushi/toml v1.2.1/go.mod h1:CxXYINrC8qIiEnFrOxCa7Jy5BFHlXnUU2pbicEuybxQ=
+github.com/BurntSushi/toml v1.3.1 h1:rHnDkSK+/g6DlREUK73PkmIs60pqrnuduK+JmP++JmU=
+github.com/BurntSushi/toml v1.3.1/go.mod h1:CxXYINrC8qIiEnFrOxCa7Jy5BFHlXnUU2pbicEuybxQ=
 github.com/adevinta/vulcan-groupie v1.0.1 h1:kTQdEszYOWDD4Cvy4FrjVL4QwLfGV8/sF/dK+3D6iKc=
 github.com/adevinta/vulcan-groupie v1.0.1/go.mod h1:COiLhmDFK3zOJXlXovU2T85dVrN60z2HvpVFFkcmdeQ=
 github.com/adevinta/vulcan-report v1.0.0 h1:44aICPZ+4svucgCSA5KmjlT3ZGzrvZXiSnkbnj6AC2k=
