@@ -3,7 +3,7 @@ module github.com/adevinta/security-overview
 go 1.19
 
 require (
-	github.com/BurntSushi/toml v1.2.1
+	github.com/BurntSushi/toml v1.3.2
 	github.com/adevinta/vulcan-groupie v1.0.1
 	github.com/adevinta/vulcan-report v1.0.0
 	github.com/aws/aws-sdk-go v1.44.196
