@@ -4,8 +4,8 @@ github.com/adevinta/vulcan-groupie v1.0.1 h1:kTQdEszYOWDD4Cvy4FrjVL4QwLfGV8/sF/d
 github.com/adevinta/vulcan-groupie v1.0.1/go.mod h1:COiLhmDFK3zOJXlXovU2T85dVrN60z2HvpVFFkcmdeQ=
 github.com/adevinta/vulcan-report v1.0.0 h1:44aICPZ+4svucgCSA5KmjlT3ZGzrvZXiSnkbnj6AC2k=
 github.com/adevinta/vulcan-report v1.0.0/go.mod h1:k34KaeoXc3H77WNMwI9F4F1G28hBjB95PeMUp9oHbEE=
-github.com/aws/aws-sdk-go v1.44.196 h1:e3h9M7fpnRHwHOohYmYjgVbcCBvkxKwZiT7fGrxRn28=
-github.com/aws/aws-sdk-go v1.44.196/go.mod h1:aVsgQcEevwlmQ7qHE9I3h+dtQgpqhFB+i8Phjh7fkwI=
+github.com/aws/aws-sdk-go v1.44.293 h1:oBPrQqsyMYe61Sl/xKVvQFflXjPwYH11aKi8QR3Nhts=
+github.com/aws/aws-sdk-go v1.44.293/go.mod h1:aVsgQcEevwlmQ7qHE9I3h+dtQgpqhFB+i8Phjh7fkwI=
 github.com/aymerick/douceur v0.2.0 h1:Mv+mAeH1Q+n9Fr+oyamOlAkUNPWPlA8PPGR0QAaYuPk=
 github.com/aymerick/douceur v0.2.0/go.mod h1:wlT5vV2O3h55X9m7iVYN0TBM0NH/MmbLnd30/FjWUq4=
 github.com/blend/go-sdk v1.20220411.3 h1:GFV4/FQX5UzXLPwWV03gP811pj7B8J2sbuq+GJQofXc=
